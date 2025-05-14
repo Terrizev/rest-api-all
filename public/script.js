@@ -293,7 +293,7 @@ function setupTryItFeature(apiItem, endpoint) {
         </div>
         <div class="tester-result">
             <div class="response-status"></div>
-            <div class="response-output">
+            <div class="response-output" style="display: block !important; max-height: none !important; overflow: auto !important;">
                 <div class="json-response"></div>
                 <div class="image-response"></div>
                 <div class="text-response"></div>
@@ -318,14 +318,13 @@ function setupTryItFeature(apiItem, endpoint) {
         const imageOutput = testerContainer.querySelector('.image-response');
         const textOutput = testerContainer.querySelector('.text-response');
         
-        // Clear previous outputs
         jsonOutput.innerHTML = '';
         imageOutput.innerHTML = '';
         textOutput.textContent = '';
         statusEl.textContent = '';
         statusEl.className = 'response-status';
+        statusEl.style.display = 'block';
         
-        // Show loading state
         jsonOutput.innerHTML = '<span class="loading-text">Sending request...</span>';
         
         try {
@@ -339,48 +338,45 @@ function setupTryItFeature(apiItem, endpoint) {
             });
             const responseTime = Date.now() - startTime;
             
-            // Display response status
             statusEl.textContent = `${response.status} ${response.statusText} ¡¤ ${responseTime}ms`;
             statusEl.classList.add(response.ok ? 'status-success' : 'status-error');
             
-            // Clear loading message
             jsonOutput.innerHTML = '';
             
-            // Check content type to determine how to handle the response
             const contentType = response.headers.get('content-type') || '';
             
             if (contentType.includes('image/')) {
-                // Handle image response
                 const blob = await response.blob();
                 const imgUrl = URL.createObjectURL(blob);
                 imageOutput.innerHTML = `
-                    <img src="${imgUrl}" class="api-image-response">
+                    <img src="${imgUrl}" class="api-image-response" style="max-width: 100%; display: block;">
                     <div class="image-meta">
                         <span>${blob.type}</span>
                         <span>${(blob.size / 1024).toFixed(2)} KB</span>
                     </div>
                 `;
+                imageOutput.style.display = 'block';
             }
             else if (contentType.includes('application/json')) {
-                // Handle JSON response
                 const data = await response.json();
                 jsonOutput.innerHTML = syntaxHighlight(data);
+                jsonOutput.style.display = 'block';
             }
             else {
-                // Handle text response as fallback
                 const text = await response.text();
                 
-                // Try to parse as JSON if it looks like JSON even if content-type doesn't match
                 if (text.trim().startsWith('{') || text.trim().startsWith('[')) {
                     try {
                         const jsonData = JSON.parse(text);
                         jsonOutput.innerHTML = syntaxHighlight(jsonData);
+                        jsonOutput.style.display = 'block';
                     } catch {
-                        // If parsing fails, display as plain text
                         textOutput.textContent = text;
+                        textOutput.style.display = 'block';
                     }
                 } else {
                     textOutput.textContent = text;
+                    textOutput.style.display = 'block';
                 }
             }
             
