@@ -17,19 +17,6 @@ const limiter = rateLimit({
 });
 
 app.use(cors());
-app.use(express.static(path.join(__dirname, "public")));
-
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
-app.get("/docs", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "documentation.html"));
-});
-
-app.use((req, res) => {
-    res.status(404).sendFile(path.join(__dirname, "public", "404.html"));
-});
 
 const routes = [
     "ytdl", "twitterdl", "igdl", "fbdl", "ttdl", "gitclone", "spotifydl",
@@ -41,6 +28,28 @@ const routes = [
 
 routes.forEach(route => {
     app.use(`/api/${route}`, limiter, require(`./api/${route}`));
+});
+
+app.use(express.static(path.join(__dirname, "public")));
+
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+app.get("/docs", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "documentation.html"));
+});
+
+app.use("/api/*", (req, res) => {
+    res.status(404).json({ 
+        error: true,
+        message: "Endpoint API tidak ditemukan",
+        documentation: "/docs"
+    });
+});
+
+app.use((req, res) => {
+    res.status(404).sendFile(path.join(__dirname, "public", "404.html"));
 });
 
 module.exports = app;
