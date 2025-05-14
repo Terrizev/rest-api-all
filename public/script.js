@@ -503,6 +503,8 @@ const apiData = {
     ]      
 };
 
+let currentlyOpenItem = null;
+
 function syntaxHighlight(json) {
     if (typeof json !== 'string') {
         json = JSON.stringify(json, null, 2);
@@ -519,8 +521,6 @@ function syntaxHighlight(json) {
         return `<span class="${cls}">${match}</span>`;
     });
 }
-
-let currentlyOpenItem = null;
 
 function setupTryItFeature(apiItem, endpoint) {
     const tryItBtn = document.createElement('button');
@@ -566,29 +566,30 @@ function setupTryItFeature(apiItem, endpoint) {
         const imageOutput = testerContainer.querySelector('.image-response');
         const textOutput = testerContainer.querySelector('.text-response');
         
-        // Reset outputs
         jsonOutput.innerHTML = '';
         imageOutput.innerHTML = '';
         textOutput.textContent = '';
         statusEl.textContent = '';
         statusEl.className = 'response-status';
         
-        // Show loading
         jsonOutput.innerHTML = '<span class="loading-text">Sending request...</span>';
         
         try {
             const startTime = Date.now();
-            const response = await fetch(url, { method });
+            const response = await fetch(url, { 
+                method,
+                headers: {
+                    'Accept': 'application/json, image/*',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
             const responseTime = Date.now() - startTime;
             
-            // Update status
             statusEl.textContent = `${response.status} ${response.statusText} ¡¤ ${responseTime}ms`;
             statusEl.classList.add(response.ok ? 'status-success' : 'status-error');
             
-            // Clear loading
             jsonOutput.innerHTML = '';
             
-            // Handle different response types
             const contentType = response.headers.get('content-type') || '';
             
             if (contentType.includes('application/json')) {
@@ -776,6 +777,11 @@ function setupThemeToggle() {
 
 function loadApiData() {
     const apiCategoriesContainer = document.getElementById('api-categories');
+    
+    if (!apiData) {
+        console.error('apiData is not defined!');
+        return;
+    }
     
     for (const category in apiData) {
         const apiCategory = document.createElement('div');
