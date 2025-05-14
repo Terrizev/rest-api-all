@@ -337,7 +337,7 @@ function setupTryItFeature(apiItem, endpoint) {
             });
             const responseTime = Date.now() - startTime;
             
-            statusEl.textContent = `${response.status} ${response.statusText} �� ${responseTime}ms`;
+            statusEl.textContent = `${response.status} ${response.statusText} · ${responseTime}ms`;
             statusEl.classList.add(response.ok ? 'status-success' : 'status-error');
             
             jsonOutput.innerHTML = '';
@@ -535,32 +535,55 @@ function loadApiData() {
         return;
     }
     
-    for (const category in apiData) {
-        const apiCategory = document.createElement('div');
-        apiCategory.className = 'api-category';
-        apiCategory.id = category;
-        
-        const categoryTitle = document.createElement('h2');
-        categoryTitle.textContent = category;
-        
-        const apiList = document.createElement('div');
-        apiList.className = 'api-list';
-        
-        apiData[category].forEach(api => {
-            apiList.appendChild(createApiItem(api));
-        });
-        
-        apiCategory.appendChild(categoryTitle);
-        apiCategory.appendChild(apiList);
-        apiCategoriesContainer.appendChild(apiCategory);
-    }
+    apiCategoriesContainer.innerHTML = '';
     
-    setupCategoryMenu();
-    setupSearch();
-    updateStatistics();
+    const loadPromises = Object.keys(apiData).map(category => {
+        return new Promise(resolve => {
+            const apiCategory = document.createElement('div');
+            apiCategory.className = 'api-category';
+            apiCategory.id = category;
+            
+            const categoryTitle = document.createElement('h2');
+            categoryTitle.textContent = category;
+            
+            const apiList = document.createElement('div');
+            apiList.className = 'api-list';
+            
+            apiData[category].forEach(api => {
+                apiList.appendChild(createApiItem(api));
+            });
+            
+            apiCategory.appendChild(categoryTitle);
+            apiCategory.appendChild(apiList);
+            apiCategoriesContainer.appendChild(apiCategory);
+            
+            setTimeout(resolve, 50);
+        });
+    });
+    
+    Promise.all(loadPromises).then(() => {
+        setupCategoryMenu();
+        setupSearch();
+        updateStatistics();
+    });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const loadingScreen = document.querySelector('.loading-screen');
+    document.querySelector('.container').style.visibility = 'hidden';
+    
     setupThemeToggle();
-    loadApiData();
+    
+    setTimeout(() => {
+        loadApiData();
+        
+        setTimeout(() => {
+            loadingScreen.classList.add('hidden');
+            document.querySelector('.container').style.visibility = 'visible';
+            
+            loadingScreen.addEventListener('transitionend', () => {
+                loadingScreen.remove();
+            });
+        }, 500);
+    }, 100);
 });
