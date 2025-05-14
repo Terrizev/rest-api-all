@@ -566,14 +566,12 @@ function setupTryItFeature(apiItem, endpoint) {
         const imageOutput = testerContainer.querySelector('.image-response');
         const textOutput = testerContainer.querySelector('.text-response');
         
-        // Clear previous outputs
         jsonOutput.innerHTML = '';
         imageOutput.innerHTML = '';
         textOutput.textContent = '';
         statusEl.textContent = '';
         statusEl.className = 'response-status';
         
-        // Show loading state
         jsonOutput.innerHTML = '<span class="loading-text">Sending request...</span>';
         
         try {
@@ -581,24 +579,24 @@ function setupTryItFeature(apiItem, endpoint) {
             const response = await fetch(url, { 
                 method,
                 headers: {
-                    'Accept': 'application/json, image/*, text/plain',
+                    'Accept': 'application/json, image/*',
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             });
             const responseTime = Date.now() - startTime;
             
-            // Display response status
             statusEl.textContent = `${response.status} ${response.statusText} ¡¤ ${responseTime}ms`;
             statusEl.classList.add(response.ok ? 'status-success' : 'status-error');
             
-            // Clear loading message
             jsonOutput.innerHTML = '';
             
-            // Check content type to determine how to handle the response
             const contentType = response.headers.get('content-type') || '';
             
-            if (contentType.includes('image/')) {
-                // Handle image response
+            if (contentType.includes('application/json')) {
+                const data = await response.json();
+                jsonOutput.innerHTML = syntaxHighlight(data);
+            } 
+            else if (contentType.includes('image')) {
                 const blob = await response.blob();
                 const imgUrl = URL.createObjectURL(blob);
                 imageOutput.innerHTML = `
@@ -609,27 +607,9 @@ function setupTryItFeature(apiItem, endpoint) {
                     </div>
                 `;
             }
-            else if (contentType.includes('application/json')) {
-                // Handle JSON response
-                const data = await response.json();
-                jsonOutput.innerHTML = syntaxHighlight(data);
-            }
             else {
-                // Handle text response as fallback
                 const text = await response.text();
-                
-                // Try to parse as JSON if it looks like JSON even if content-type doesn't match
-                if (text.trim().startsWith('{') || text.trim().startsWith('[')) {
-                    try {
-                        const jsonData = JSON.parse(text);
-                        jsonOutput.innerHTML = syntaxHighlight(jsonData);
-                    } catch {
-                        // If parsing fails, display as plain text
-                        textOutput.textContent = text;
-                    }
-                } else {
-                    textOutput.textContent = text;
-                }
+                textOutput.textContent = text;
             }
             
         } catch (error) {
