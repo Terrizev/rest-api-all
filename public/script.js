@@ -275,6 +275,26 @@ function syntaxHighlight(json) {
 }
 
 function setupTryItFeature(apiItem, endpoint) {
+    const forceStyles = document.createElement('style');
+    forceStyles.textContent = `
+        .tester-container.active .response-output,
+        .tester-container.active .json-response,
+        .tester-container.active .image-response,
+        .tester-container.active .text-response {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            max-height: none !important;
+            overflow: visible !important;
+        }
+        .api-image-response {
+            max-width: 100% !important;
+            display: block !important;
+            margin: 10px 0 !important;
+        }
+    `;
+    document.head.appendChild(forceStyles);
+
     const tryItBtn = document.createElement('button');
     tryItBtn.className = 'try-it-btn';
     tryItBtn.innerHTML = '<i class="fas fa-bolt"></i> Try It';
@@ -291,12 +311,12 @@ function setupTryItFeature(apiItem, endpoint) {
             <input type="text" class="tester-url" value="${endpoint}" placeholder="Add parameters...">
             <button class="send-btn"><i class="fas fa-paper-plane"></i> Send</button>
         </div>
-        <div class="tester-result">
-            <div class="response-status"></div>
-            <div class="response-output" style="display: block !important; max-height: none !important; overflow: auto !important;">
-                <div class="json-response"></div>
-                <div class="image-response"></div>
-                <div class="text-response"></div>
+        <div class="tester-result" style="border: 2px solid #ddd; padding: 10px; margin-top: 10px;">
+            <div class="response-status" style="margin-bottom: 10px;"></div>
+            <div class="response-output" style="display: block !important; max-height: none !important; overflow: auto !important; border: 1px solid #eee; padding: 10px; background: #f9f9f9;">
+                <div class="json-response" style="white-space: pre-wrap; font-family: monospace;"></div>
+                <div class="image-response" style="text-align: center;"></div>
+                <div class="text-response" style="white-space: pre-wrap; font-family: monospace;"></div>
             </div>
         </div>
     `;
@@ -317,13 +337,13 @@ function setupTryItFeature(apiItem, endpoint) {
         const jsonOutput = testerContainer.querySelector('.json-response');
         const imageOutput = testerContainer.querySelector('.image-response');
         const textOutput = testerContainer.querySelector('.text-response');
+        const outputContainer = testerContainer.querySelector('.response-output');
         
         jsonOutput.innerHTML = '';
         imageOutput.innerHTML = '';
         textOutput.textContent = '';
         statusEl.textContent = '';
         statusEl.className = 'response-status';
-        statusEl.style.display = 'block';
         
         jsonOutput.innerHTML = '<span class="loading-text">Sending request...</span>';
         
@@ -340,21 +360,37 @@ function setupTryItFeature(apiItem, endpoint) {
             
             statusEl.textContent = `${response.status} ${response.statusText} ¡¤ ${responseTime}ms`;
             statusEl.classList.add(response.ok ? 'status-success' : 'status-error');
+            statusEl.style.display = 'block';
             
             jsonOutput.innerHTML = '';
+            
+            outputContainer.style.display = 'block';
+            testerContainer.classList.add('active');
             
             const contentType = response.headers.get('content-type') || '';
             
             if (contentType.includes('image/')) {
                 const blob = await response.blob();
                 const imgUrl = URL.createObjectURL(blob);
-                imageOutput.innerHTML = `
-                    <img src="${imgUrl}" class="api-image-response" style="max-width: 100%; display: block;">
-                    <div class="image-meta">
-                        <span>${blob.type}</span>
-                        <span>${(blob.size / 1024).toFixed(2)} KB</span>
-                    </div>
+                
+                const img = document.createElement('img');
+                img.src = imgUrl;
+                img.className = 'api-image-response';
+                img.style.maxWidth = '100%';
+                img.style.display = 'block';
+                img.style.margin = '10px 0';
+                
+                imageOutput.innerHTML = '';
+                imageOutput.appendChild(img);
+                
+                const metaDiv = document.createElement('div');
+                metaDiv.className = 'image-meta';
+                metaDiv.innerHTML = `
+                    <span>${blob.type}</span>
+                    <span>${(blob.size / 1024).toFixed(2)} KB</span>
                 `;
+                imageOutput.appendChild(metaDiv);
+                
                 imageOutput.style.display = 'block';
             }
             else if (contentType.includes('application/json')) {
@@ -370,7 +406,7 @@ function setupTryItFeature(apiItem, endpoint) {
                         const jsonData = JSON.parse(text);
                         jsonOutput.innerHTML = syntaxHighlight(jsonData);
                         jsonOutput.style.display = 'block';
-                    } catch {
+                    } catch (e) {
                         textOutput.textContent = text;
                         textOutput.style.display = 'block';
                     }
