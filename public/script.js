@@ -324,6 +324,7 @@ function setupTryItFeature(apiItem, endpoint) {
         textOutput.classList.remove('active');
 
         jsonOutput.innerHTML = '<span class="loading-text">Sending request...</span>';
+        jsonOutput.classList.add('active');
 
         try {
             const startTime = Date.now();
@@ -366,6 +367,7 @@ function setupTryItFeature(apiItem, endpoint) {
             statusEl.textContent = `Error: ${error.message}`;
             statusEl.classList.add('status-error');
             jsonOutput.innerHTML = '';
+            jsonOutput.classList.add('active');
         }
     });
 }
