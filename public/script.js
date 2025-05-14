@@ -504,192 +504,211 @@ const apiData = {
 };
 
 function syntaxHighlight(json) {
-    let jsonStr = JSON.stringify(json, null, 2)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-    return jsonStr.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, 
-        function(match) {
-            let cls = 'number';
-            if (/^"/.test(match)) cls = match.endsWith(':') ? 'key' : 'string';
-            else if (/true|false/.test(match)) cls = 'boolean';
-            else if (/null/.test(match)) cls = 'null';
-            return `<span class="${cls}">${match}</span>`;
-        });
+    if (typeof json !== 'string') {
+        json = JSON.stringify(json, null, 2);
+    }
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function(match) {
+        let cls = 'number';
+        if (/^"/.test(match)) {
+            cls = match.endsWith(':') ? 'key' : 'string';
+        } else if (/true|false/.test(match)) {
+            cls = 'boolean';
+        } else if (/null/.test(match)) {
+            cls = 'null';
+        }
+        return `<span class="${cls}">${match}</span>`;
+    });
 }
 
-function searchEndpoints() {
-  const searchInput = document.getElementById('search-input');
-  const searchTerm = searchInput.value.toLowerCase();
-  
-  document.querySelectorAll('.api-item').forEach(item => {
-    const title = item.querySelector('.api-title').textContent.toLowerCase();
-    const description = item.querySelector('.api-description p').textContent.toLowerCase();
-    item.style.display = (title.includes(searchTerm) || description.includes(searchTerm)) 
-      ? 'block' 
-      : 'none';
-  });
+let currentlyOpenItem = null;
 
-  document.querySelectorAll('.api-category').forEach(category => {
-    const hasVisibleItems = category.querySelector('.api-item[style="display: block;"]');
-    category.style.display = hasVisibleItems ? 'block' : 'none';
-  });
+function setupTryItFeature(apiItem, endpoint) {
+    const tryItBtn = document.createElement('button');
+    tryItBtn.className = 'try-it-btn';
+    tryItBtn.innerHTML = '<i class="fas fa-bolt"></i> Try It';
+    
+    const testerContainer = document.createElement('div');
+    testerContainer.className = 'tester-container';
+    
+    testerContainer.innerHTML = `
+        <div class="tester-controls">
+            <select class="tester-method">
+                <option value="GET">GET</option>
+                <option value="POST">POST</option>
+            </select>
+            <input type="text" class="tester-url" value="${endpoint}" placeholder="Add parameters...">
+            <button class="send-btn"><i class="fas fa-paper-plane"></i> Send</button>
+        </div>
+        <div class="tester-result">
+            <div class="response-status"></div>
+            <pre class="response-output">Response will appear here...</pre>
+        </div>
+    `;
+    
+    const buttonContainer = apiItem.querySelector('.api-button-container');
+    buttonContainer.appendChild(tryItBtn);
+    apiItem.querySelector('.api-description').appendChild(testerContainer);
+    
+    tryItBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        testerContainer.classList.toggle('active');
+    });
+    
+    testerContainer.querySelector('.send-btn').addEventListener('click', async () => {
+        const method = testerContainer.querySelector('.tester-method').value;
+        let url = testerContainer.querySelector('.tester-url').value;
+        const output = testerContainer.querySelector('.response-output');
+        const statusEl = testerContainer.querySelector('.response-status');
+        
+        if (!url.startsWith('http') && !url.startsWith('/')) {
+            url = '/' + url;
+        }
+        
+        output.innerHTML = '<span class="loading-text">Sending request...</span>';
+        statusEl.textContent = '';
+        statusEl.className = 'response-status';
+        
+        try {
+            const startTime = Date.now();
+            const response = await fetch(url, { method });
+            const responseTime = Date.now() - startTime;
+            
+            statusEl.textContent = `${response.status} ${response.statusText} ¡¤ ${responseTime}ms`;
+            statusEl.classList.add(response.ok ? 'status-success' : 'status-error');
+            
+            const data = await response.json();
+            output.innerHTML = syntaxHighlight(data);
+        } catch (error) {
+            statusEl.textContent = `Error: ${error.message}`;
+            statusEl.classList.add('status-error');
+            output.textContent = '';
+        }
+    });
 }
-
-document.getElementById('search-input').addEventListener('input', searchEndpoints);
 
 function createApiItem(api) {
     const apiItem = document.createElement('div');
     apiItem.className = 'api-item';
-
+    
     const apiHeader = document.createElement('div');
     apiHeader.className = 'api-header';
-
-    const apiMethod = document.createElement('span');
-    apiMethod.className = 'api-method';
-    apiMethod.textContent = api.method;
-
-    const apiTitle = document.createElement('span');
-    apiTitle.className = 'api-title';
-    apiTitle.textContent = api.title;
-
-    const apiStatusBadge = document.createElement('span');
-    apiStatusBadge.className = `api-status-badge ${api.status}`;
-    apiStatusBadge.textContent = api.status.toUpperCase();
-
-    apiHeader.appendChild(apiMethod);
-    apiHeader.appendChild(apiTitle);
-    apiHeader.appendChild(apiStatusBadge);
-
+    
+    apiHeader.innerHTML = `
+        <span class="api-method">${api.method}</span>
+        <span class="api-title">${api.title}</span>
+        <span class="api-status-badge ${api.status}">${api.status.toUpperCase()}</span>
+    `;
+    
     const apiDescription = document.createElement('div');
     apiDescription.className = 'api-description';
     apiDescription.style.display = 'none';
-
-    const apiDescriptionText = document.createElement('p');
-    apiDescriptionText.textContent = api.description;
-
-    const apiEndpoint = document.createElement('div');
-    apiEndpoint.className = 'api-endpoint';
-    apiEndpoint.textContent = `Endpoint: ${api.endpoint}`;
-
-    // Perbaikan untuk button container dan button
-    const buttonContainer = document.createElement('div');
-    buttonContainer.className = 'api-button-container';
-
-    const accessButton = document.createElement('button');
-    accessButton.innerHTML = '<i class="fas fa-external-link-alt"></i> Akses Endpoint';
-    accessButton.onclick = () => window.location.href = api.endpoint;
-
-    const copyButton = document.createElement('button');
-    copyButton.innerHTML = '<i class="far fa-copy"></i> Salin Endpoint';
-    copyButton.onclick = () => {
-        navigator.clipboard.writeText(api.endpoint)
-            .then(() => alert('Endpoint berhasil disalin!'))
-            .catch(err => console.error('Gagal menyalin:', err));
-    };
-
-    buttonContainer.appendChild(accessButton);
-    buttonContainer.appendChild(copyButton);
-
-    // Inisialisasi variabel apiResponse di luar blok if
-    let apiResponse = null;
-
-    // Buat container untuk tombol response
-    const responseButtonContainer = document.createElement('div');
-    responseButtonContainer.className = 'response-button-container';
-
-    // Tambah contoh response jika ada
-    if(exampleResponses && exampleResponses[api.title]) {
-        apiResponse = document.createElement('div');
-        apiResponse.className = 'api-response';
-        
-        const responseTitle = document.createElement('strong');
-        responseTitle.textContent = 'Contoh Response:';
-        
-        const responsePre = document.createElement('pre');
-        responsePre.innerHTML = syntaxHighlight(exampleResponses[api.title]);
-        
-        apiResponse.appendChild(responseTitle);
-        apiResponse.appendChild(responsePre);
-        
-        // Tombol toggle response
-        const toggleResponseBtn = document.createElement('button');
-        toggleResponseBtn.className = 'toggle-response-btn';
-        toggleResponseBtn.innerHTML = '<i class="fas fa-code"></i> Tampilkan Response';
-        let isResponseVisible = false;
-
-        toggleResponseBtn.onclick = () => {
-            isResponseVisible = !isResponseVisible;
-            apiResponse.style.display = isResponseVisible ? 'block' : 'none';
-            toggleResponseBtn.innerHTML = isResponseVisible 
-                ? '<i class="fas fa-times"></i> Sembunyikan Response' 
-                : '<i class="fas fa-code"></i> Tampilkan Response';
-        };
-
-        responseButtonContainer.appendChild(toggleResponseBtn);
-        
-        // Sembunyikan response awal
-        apiResponse.style.display = 'none';
-    }
     
-    // Menambahkan elemen-elemen ke apiDescription dengan urutan yang tepat
-    apiDescription.appendChild(apiDescriptionText);
-    apiDescription.appendChild(apiEndpoint);
-    apiDescription.appendChild(buttonContainer);
-    
-    // Tambahkan response button container jika ada response
-    if(apiResponse) {
-        apiDescription.appendChild(responseButtonContainer);
-        apiDescription.appendChild(apiResponse); // Response di bawah tombol toggle
-    }
+    apiDescription.innerHTML = `
+        <p>${api.description}</p>
+        <div class="api-endpoint">Endpoint: ${api.endpoint}</div>
+        <div class="api-button-container">
+            <button class="access-btn"><i class="fas fa-external-link-alt"></i> Access</button>
+            <button class="copy-btn"><i class="far fa-copy"></i> Copy</button>
+        </div>
+    `;
     
     apiItem.appendChild(apiHeader);
     apiItem.appendChild(apiDescription);
-
+    
+    setupTryItFeature(apiItem, api.endpoint);
+    
+    apiDescription.querySelector('.access-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        window.open(api.endpoint, '_blank');
+    });
+    
+    apiDescription.querySelector('.copy-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        navigator.clipboard.writeText(api.endpoint)
+            .then(() => alert('Endpoint copied to clipboard!'))
+            .catch(err => console.error('Copy failed:', err));
+    });
+    
+    apiHeader.addEventListener('click', function(e) {
+        if (e.target.closest('.try-it-btn, .api-status-badge')) return;
+        
+        if (currentlyOpenItem && currentlyOpenItem !== this.nextElementSibling) {
+            currentlyOpenItem.style.display = 'none';
+        }
+        
+        const description = this.nextElementSibling;
+        description.style.display = description.style.display === 'none' ? 'block' : 'none';
+        currentlyOpenItem = description.style.display === 'block' ? description : null;
+    });
+    
     return apiItem;
 }
 
-function setupToggleDescriptions() {
-    const apiHeaders = document.querySelectorAll('.api-header');
+function updateStatistics() {
+    let total = 0, online = 0, offline = 0;
+    
+    for (const category in apiData) {
+        apiData[category].forEach(api => {
+            total++;
+            api.status === 'online' ? online++ : offline++;
+        });
+    }
+    
+    document.getElementById('total-endpoints').textContent = total;
+    document.getElementById('online-endpoints').textContent = online;
+    document.getElementById('offline-endpoints').textContent = offline;
+}
 
-    apiHeaders.forEach(header => {
-        header.addEventListener('click', function () {
-            document.querySelectorAll('.api-description').forEach(desc => {
-                desc.style.display = "none";
-            });
-
-            const description = this.nextElementSibling;
-            if (description.style.display === "none" || !description.style.display) {
-                description.style.display = "block";
-            } else {
-                description.style.display = "none";
-            }
+function setupSearch() {
+    const searchInput = document.getElementById('search-input');
+    
+    searchInput.addEventListener('input', () => {
+        const term = searchInput.value.toLowerCase();
+        
+        document.querySelectorAll('.api-item').forEach(item => {
+            const title = item.querySelector('.api-title').textContent.toLowerCase();
+            const desc = item.querySelector('.api-description p').textContent.toLowerCase();
+            item.style.display = (title.includes(term) || desc.includes(term)) ? 'block' : 'none';
+        });
+        
+        document.querySelectorAll('.api-category').forEach(category => {
+            const hasVisible = category.querySelector('.api-item[style="display: block;"]');
+            category.style.display = hasVisible ? 'block' : 'none';
         });
     });
 }
 
-function updateStatistics() {
-    let totalEndpoints = 0;
-    let onlineEndpoints = 0;
-    let offlineEndpoints = 0;
-
+function setupCategoryMenu() {
+    const menuBtn = document.querySelector('.menu-btn');
+    const categoryPanel = document.querySelector('.category-panel');
+    const closeBtn = document.querySelector('.close-btn');
+    const categoryList = document.querySelector('.category-list');
+    
     for (const category in apiData) {
-        apiData[category].forEach(api => {
-            totalEndpoints++;
-            if (api.status === 'online') {
-                onlineEndpoints++;
-            } else {
-                offlineEndpoints++;
-            }
-        });
+        const link = document.createElement('a');
+        link.className = 'category-link';
+        link.href = `#${category}`;
+        link.textContent = category;
+        link.onclick = () => categoryPanel.classList.remove('active');
+        categoryList.appendChild(link);
     }
-
-    document.getElementById('total-endpoints').textContent = totalEndpoints;
-    document.getElementById('online-endpoints').textContent = onlineEndpoints;
-    document.getElementById('offline-endpoints').textContent = offlineEndpoints;
+    
+    menuBtn.addEventListener('click', () => {
+        categoryPanel.classList.toggle('active');
+    });
+    
+    closeBtn.addEventListener('click', () => {
+        categoryPanel.classList.remove('active');
+    });
+    
+    document.addEventListener('click', (e) => {
+        if (!categoryPanel.contains(e.target) && !menuBtn.contains(e.target)) {
+            categoryPanel.classList.remove('active');
+        }
+    });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+function setupThemeToggle() {
     const switchContainer = document.createElement('div');
     switchContainer.className = 'theme-switch-container';
     switchContainer.innerHTML = `
@@ -702,12 +721,15 @@ document.addEventListener('DOMContentLoaded', function() {
         </label>
     `;
     document.body.appendChild(switchContainer);
-    const isDarkMode = localStorage.getItem('darkMode') === 'true';
+    
     const themeToggle = document.getElementById('theme-toggle');
+    const isDarkMode = localStorage.getItem('darkMode') === 'true';
+    
     if (isDarkMode) {
         document.body.classList.add('dark-theme');
         themeToggle.checked = true;
     }
+    
     themeToggle.addEventListener('change', function() {
         if (this.checked) {
             document.body.classList.add('dark-theme');
@@ -717,33 +739,37 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('darkMode', 'false');
         }
     });
-});
+}
 
 function loadApiData() {
     const apiCategoriesContainer = document.getElementById('api-categories');
-
+    
     for (const category in apiData) {
         const apiCategory = document.createElement('div');
         apiCategory.className = 'api-category';
-
+        apiCategory.id = category;
+        
         const categoryTitle = document.createElement('h2');
         categoryTitle.textContent = category;
-
+        
         const apiList = document.createElement('div');
         apiList.className = 'api-list';
-
+        
         apiData[category].forEach(api => {
-            const apiItem = createApiItem(api);
-            apiList.appendChild(apiItem);
+            apiList.appendChild(createApiItem(api));
         });
-
+        
         apiCategory.appendChild(categoryTitle);
         apiCategory.appendChild(apiList);
         apiCategoriesContainer.appendChild(apiCategory);
     }
-
-    setupToggleDescriptions();
+    
+    setupCategoryMenu();
+    setupSearch();
     updateStatistics();
 }
 
-document.addEventListener('DOMContentLoaded', loadApiData);
+document.addEventListener('DOMContentLoaded', () => {
+    setupThemeToggle();
+    loadApiData();
+});
