@@ -541,7 +541,11 @@ function setupTryItFeature(apiItem, endpoint) {
         </div>
         <div class="tester-result">
             <div class="response-status"></div>
-            <pre class="response-output">Response will appear here...</pre>
+            <div class="response-output">
+                <div class="json-response"></div>
+                <div class="image-response"></div>
+                <div class="text-response"></div>
+            </div>
         </div>
     `;
     
@@ -557,31 +561,60 @@ function setupTryItFeature(apiItem, endpoint) {
     testerContainer.querySelector('.send-btn').addEventListener('click', async () => {
         const method = testerContainer.querySelector('.tester-method').value;
         let url = testerContainer.querySelector('.tester-url').value;
-        const output = testerContainer.querySelector('.response-output');
         const statusEl = testerContainer.querySelector('.response-status');
+        const jsonOutput = testerContainer.querySelector('.json-response');
+        const imageOutput = testerContainer.querySelector('.image-response');
+        const textOutput = testerContainer.querySelector('.text-response');
         
-        if (!url.startsWith('http') && !url.startsWith('/')) {
-            url = '/' + url;
-        }
-        
-        output.innerHTML = '<span class="loading-text">Sending request...</span>';
+        // Reset outputs
+        jsonOutput.innerHTML = '';
+        imageOutput.innerHTML = '';
+        textOutput.textContent = '';
         statusEl.textContent = '';
         statusEl.className = 'response-status';
+        
+        // Show loading
+        jsonOutput.innerHTML = '<span class="loading-text">Sending request...</span>';
         
         try {
             const startTime = Date.now();
             const response = await fetch(url, { method });
             const responseTime = Date.now() - startTime;
             
+            // Update status
             statusEl.textContent = `${response.status} ${response.statusText} ¡¤ ${responseTime}ms`;
             statusEl.classList.add(response.ok ? 'status-success' : 'status-error');
             
-            const data = await response.json();
-            output.innerHTML = syntaxHighlight(data);
+            // Clear loading
+            jsonOutput.innerHTML = '';
+            
+            // Handle different response types
+            const contentType = response.headers.get('content-type') || '';
+            
+            if (contentType.includes('application/json')) {
+                const data = await response.json();
+                jsonOutput.innerHTML = syntaxHighlight(data);
+            } 
+            else if (contentType.includes('image')) {
+                const blob = await response.blob();
+                const imgUrl = URL.createObjectURL(blob);
+                imageOutput.innerHTML = `
+                    <img src="${imgUrl}" class="api-image-response">
+                    <div class="image-meta">
+                        <span>${blob.type}</span>
+                        <span>${(blob.size / 1024).toFixed(2)} KB</span>
+                    </div>
+                `;
+            }
+            else {
+                const text = await response.text();
+                textOutput.textContent = text;
+            }
+            
         } catch (error) {
             statusEl.textContent = `Error: ${error.message}`;
             statusEl.classList.add('status-error');
-            output.textContent = '';
+            jsonOutput.innerHTML = '';
         }
     });
 }
