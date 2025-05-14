@@ -275,33 +275,13 @@ function syntaxHighlight(json) {
 }
 
 function setupTryItFeature(apiItem, endpoint) {
-    const forceStyles = document.createElement('style');
-    forceStyles.textContent = `
-        .tester-container.active .response-output,
-        .tester-container.active .json-response,
-        .tester-container.active .image-response,
-        .tester-container.active .text-response {
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            max-height: none !important;
-            overflow: visible !important;
-        }
-        .api-image-response {
-            max-width: 100% !important;
-            display: block !important;
-            margin: 10px 0 !important;
-        }
-    `;
-    document.head.appendChild(forceStyles);
-
     const tryItBtn = document.createElement('button');
     tryItBtn.className = 'try-it-btn';
     tryItBtn.innerHTML = '<i class="fas fa-bolt"></i> Try It';
-    
+
     const testerContainer = document.createElement('div');
     testerContainer.className = 'tester-container';
-    
+
     testerContainer.innerHTML = `
         <div class="tester-controls">
             <select class="tester-method">
@@ -311,111 +291,77 @@ function setupTryItFeature(apiItem, endpoint) {
             <input type="text" class="tester-url" value="${endpoint}" placeholder="Add parameters...">
             <button class="send-btn"><i class="fas fa-paper-plane"></i> Send</button>
         </div>
-        <div class="tester-result" style="border: 2px solid #ddd; padding: 10px; margin-top: 10px;">
-            <div class="response-status" style="margin-bottom: 10px;"></div>
-            <div class="response-output" style="display: block !important; max-height: none !important; overflow: auto !important; border: 1px solid #eee; padding: 10px; background: #f9f9f9;">
-                <div class="json-response" style="white-space: pre-wrap; font-family: monospace;"></div>
-                <div class="image-response" style="text-align: center;"></div>
-                <div class="text-response" style="white-space: pre-wrap; font-family: monospace;"></div>
+        <div class="tester-result">
+            <div class="response-status"></div>
+            <div class="response-output">
+                <div class="json-response"></div>
+                <div class="text-response"></div>
             </div>
         </div>
     `;
-    
+
     const buttonContainer = apiItem.querySelector('.api-button-container');
     buttonContainer.appendChild(tryItBtn);
     apiItem.querySelector('.api-description').appendChild(testerContainer);
-    
+
     tryItBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         testerContainer.classList.toggle('active');
     });
-    
+
     testerContainer.querySelector('.send-btn').addEventListener('click', async () => {
         const method = testerContainer.querySelector('.tester-method').value;
         let url = testerContainer.querySelector('.tester-url').value;
         const statusEl = testerContainer.querySelector('.response-status');
         const jsonOutput = testerContainer.querySelector('.json-response');
-        const imageOutput = testerContainer.querySelector('.image-response');
         const textOutput = testerContainer.querySelector('.text-response');
-        const outputContainer = testerContainer.querySelector('.response-output');
-        
+
         jsonOutput.innerHTML = '';
-        imageOutput.innerHTML = '';
         textOutput.textContent = '';
         statusEl.textContent = '';
         statusEl.className = 'response-status';
-        
+        jsonOutput.classList.remove('active');
+        textOutput.classList.remove('active');
+
         jsonOutput.innerHTML = '<span class="loading-text">Sending request...</span>';
-        
+
         try {
             const startTime = Date.now();
-            const response = await fetch(url, { 
+            const response = await fetch(url, {
                 method,
                 headers: {
-                    'Accept': 'application/json, image/*, text/plain',
+                    'Accept': 'application/json, text/plain',
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             });
             const responseTime = Date.now() - startTime;
-            
-            statusEl.textContent = `${response.status} ${response.statusText} ¡¤ ${responseTime}ms`;
+
+            statusEl.textContent = `${response.status} ${response.statusText} ?¡è ${responseTime}ms`;
             statusEl.classList.add(response.ok ? 'status-success' : 'status-error');
-            statusEl.style.display = 'block';
-            
             jsonOutput.innerHTML = '';
-            
-            outputContainer.style.display = 'block';
-            testerContainer.classList.add('active');
-            
+
             const contentType = response.headers.get('content-type') || '';
-            
-            if (contentType.includes('image/')) {
-                const blob = await response.blob();
-                const imgUrl = URL.createObjectURL(blob);
-                
-                const img = document.createElement('img');
-                img.src = imgUrl;
-                img.className = 'api-image-response';
-                img.style.maxWidth = '100%';
-                img.style.display = 'block';
-                img.style.margin = '10px 0';
-                
-                imageOutput.innerHTML = '';
-                imageOutput.appendChild(img);
-                
-                const metaDiv = document.createElement('div');
-                metaDiv.className = 'image-meta';
-                metaDiv.innerHTML = `
-                    <span>${blob.type}</span>
-                    <span>${(blob.size / 1024).toFixed(2)} KB</span>
-                `;
-                imageOutput.appendChild(metaDiv);
-                
-                imageOutput.style.display = 'block';
-            }
-            else if (contentType.includes('application/json')) {
+
+            if (contentType.includes('application/json')) {
                 const data = await response.json();
                 jsonOutput.innerHTML = syntaxHighlight(data);
-                jsonOutput.style.display = 'block';
-            }
-            else {
+                jsonOutput.classList.add('active');
+            } else {
                 const text = await response.text();
-                
                 if (text.trim().startsWith('{') || text.trim().startsWith('[')) {
                     try {
                         const jsonData = JSON.parse(text);
                         jsonOutput.innerHTML = syntaxHighlight(jsonData);
-                        jsonOutput.style.display = 'block';
-                    } catch (e) {
+                        jsonOutput.classList.add('active');
+                    } catch {
                         textOutput.textContent = text;
-                        textOutput.style.display = 'block';
+                        textOutput.classList.add('active');
                     }
                 } else {
                     textOutput.textContent = text;
-                    textOutput.style.display = 'block';
+                    textOutput.classList.add('active');
                 }
             }
-            
         } catch (error) {
             statusEl.textContent = `Error: ${error.message}`;
             statusEl.classList.add('status-error');
