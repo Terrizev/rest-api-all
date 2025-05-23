@@ -274,103 +274,125 @@ function syntaxHighlight(json) {
     });
 }
 
-function setupTryItFeature(apiItem, endpoint) {
+// Perbarui fungsi setupTryItFeature
+function setupTryItFeature(apiItem, endpoint, title) {
     const tryItBtn = document.createElement('button');
     tryItBtn.className = 'try-it-btn';
-    tryItBtn.innerHTML = '<i class="fas fa-bolt"></i> Try It';
+    tryItBtn.innerHTML = '<i class="fas fa-flask"></i> Try It';
     
-    const testerContainer = document.createElement('div');
-    testerContainer.className = 'tester-container';
-    
-    testerContainer.innerHTML = `
-        <div class="tester-controls">
-            <select class="tester-method">
-                <option value="GET">GET</option>
-                <option value="POST">POST</option>
-            </select>
-            <input type="text" class="tester-url" value="${endpoint}" placeholder="Add parameters...">
-            <button class="send-btn"><i class="fas fa-paper-plane"></i> Send</button>
-        </div>
-        <div class="tester-result">
-            <div class="response-status"></div>
-            <div class="response-output">
-                <div class="json-response"></div>
-                <div class="image-response"></div>
-                <div class="text-response"></div>
-            </div>
-        </div>
-    `;
-    
+    // Tempatkan tombol di description
     const buttonContainer = apiItem.querySelector('.api-button-container');
     buttonContainer.appendChild(tryItBtn);
-    apiItem.querySelector('.api-description').appendChild(testerContainer);
-    
+
     tryItBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        testerContainer.classList.toggle('active');
+        openApiModal(endpoint, title);
     });
+}
+
+// Fungsi untuk membuka modal
+function openApiModal(endpoint, title) {
+    const modal = document.getElementById('apiModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const testerUrl = modal.querySelector('.tester-url');
+    const responseContent = modal.querySelector('.response-content');
     
-    testerContainer.querySelector('.send-btn').addEventListener('click', async () => {
-        const method = testerContainer.querySelector('.tester-method').value;
-        let url = testerContainer.querySelector('.tester-url').value;
-        const statusEl = testerContainer.querySelector('.response-status');
-        const jsonOutput = testerContainer.querySelector('.json-response');
-        const imageOutput = testerContainer.querySelector('.image-response');
-        const textOutput = testerContainer.querySelector('.text-response');
-        
-        jsonOutput.innerHTML = '';
-        imageOutput.innerHTML = '';
-        textOutput.textContent = '';
-        statusEl.textContent = '';
-        statusEl.className = 'response-status';
-        
-        jsonOutput.innerHTML = '<span class="loading-text">Sending request...</span>';
-        
+    // Reset modal state
+    modalTitle.textContent = title;
+    testerUrl.value = endpoint;
+    responseContent.innerHTML = '';
+    modal.querySelector('.response-status').textContent = '';
+    modal.querySelector('.response-time').textContent = '';
+    modal.querySelector('.loading-indicator').style.display = 'none';
+    
+    modal.classList.add('active');
+}
+
+// Inisialisasi modal
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('apiModal');
+    
+    // Close modal
+    modal.querySelector('.close-modal').addEventListener('click', () => {
+        modal.classList.remove('active');
+    });
+
+    // Close ketika klik di luar modal
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+        }
+    });
+
+    // Send request handler
+    modal.querySelector('.send-btn').addEventListener('click', async () => {
+        const method = modal.querySelector('.tester-method').value;
+        const url = modal.querySelector('.tester-url').value;
+        const responseStatus = modal.querySelector('.response-status');
+        const responseTime = modal.querySelector('.response-time');
+        const responseContent = modal.querySelector('.response-content');
+        const loadingIndicator = modal.querySelector('.loading-indicator');
+
+        // Reset dan tampilkan loading
+        responseContent.innerHTML = '';
+        responseStatus.textContent = '';
+        responseTime.textContent = '';
+        loadingIndicator.style.display = 'flex';
+
         try {
             const startTime = Date.now();
             const response = await fetch(url, { 
                 method,
-                headers: {
-                    'Accept': 'application/json, image/*',
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
+                headers: { 'Accept': 'application/json, image/*' }
             });
-            const responseTime = Date.now() - startTime;
-            
-            statusEl.textContent = `${response.status} ${response.statusText} · ${responseTime}ms`;
-            statusEl.classList.add(response.ok ? 'status-success' : 'status-error');
-            
-            jsonOutput.innerHTML = '';
-            
+            const responseTimeMs = Date.now() - startTime;
+
+            // Update metadata
+            responseTime.textContent = `${responseTimeMs}ms`;
+            responseStatus.textContent = `${response.status} ${response.statusText}`;
+            responseStatus.className = `response-status ${response.ok ? 'status-success' : 'status-error'}`;
+
+            // Handle response content
             const contentType = response.headers.get('content-type') || '';
             
             if (contentType.includes('application/json')) {
                 const data = await response.json();
-                jsonOutput.innerHTML = syntaxHighlight(data);
+                responseContent.innerHTML = `<pre>${syntaxHighlight(data)}</pre>`;
             } 
             else if (contentType.includes('image')) {
                 const blob = await response.blob();
                 const imgUrl = URL.createObjectURL(blob);
-                imageOutput.innerHTML = `
-                    <img src="${imgUrl}" class="api-image-response">
-                    <div class="image-meta">
-                        <span>${blob.type}</span>
-                        <span>${(blob.size / 1024).toFixed(2)} KB</span>
+                responseContent.innerHTML = `
+                    <div class="image-response">
+                        <img src="${imgUrl}" class="api-image-response">
+                        <button class="download-btn">
+                            <i class="fas fa-download"></i> Download Image
+                        </button>
                     </div>
                 `;
+                
+                // Add download handler
+                responseContent.querySelector('.download-btn').addEventListener('click', () => {
+                    const a = document.createElement('a');
+                    a.href = imgUrl;
+                    a.download = `download-${Date.now()}.${blob.type.split('/')[1]}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                });
             }
             else {
                 const text = await response.text();
-                textOutput.textContent = text;
+                responseContent.textContent = text;
             }
-            
         } catch (error) {
-            statusEl.textContent = `Error: ${error.message}`;
-            statusEl.classList.add('status-error');
-            jsonOutput.innerHTML = '';
+            responseStatus.textContent = `Error: ${error.message}`;
+            responseStatus.className = 'response-status status-error';
+        } finally {
+            loadingIndicator.style.display = 'none';
         }
     });
-}
+});
 
 function createApiItem(api) {
     const apiItem = document.createElement('div');
@@ -401,7 +423,7 @@ function createApiItem(api) {
     apiItem.appendChild(apiHeader);
     apiItem.appendChild(apiDescription);
     
-    setupTryItFeature(apiItem, api.endpoint);
+    setupTryItFeature(apiItem, api.endpoint, api.title);
     
     apiDescription.querySelector('.access-btn').addEventListener('click', (e) => {
         e.stopPropagation();

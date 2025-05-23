@@ -12,7 +12,37 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="https://files.catbox.moe/2ybrj7.jpg" type="image/jpeg">
-</head>
+</head><!-- Tambahkan di index.html sebelum </body> -->
+<div class="api-modal" id="apiModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle">API Tester</h3>
+            <span class="close-modal">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="tester-controls">
+                <select class="tester-method">
+                    <option value="GET">GET</option>
+                </select>
+                <input type="text" class="tester-url" placeholder="API Endpoint...">
+                <button class="send-btn"><i class="fas fa-paper-plane"></i> Send Request</button>
+            </div>
+            <div class="response-container">
+                <div class="response-meta">
+                    <div class="response-status"></div>
+                    <div class="response-time"></div>
+                </div>
+                <div class="response-output">
+                    <div class="loading-indicator">
+                        <div class="loading-spinner"></div>
+                        <span class="loading-text">Memproses permintaan...</span>
+                    </div>
+                    <div class="response-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <body>
   <!-- Loading Screen -->
 <div class="loading-screen">
