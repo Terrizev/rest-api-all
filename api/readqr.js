@@ -1,32 +1,48 @@
-const express = require("express");
-const multer = require("multer");
-const Jimp = require("jimp");
-const qrCodeReader = require("qrcode-reader");
+const express = require('express')
+const axios = require('axios')
+const Jimp = require('jimp')
+const QrCode = require('qrcode-reader')
 
-const router = express.Router();
-const upload = multer({ storage: multer.memoryStorage() });
+const router = express.Router()
 
-router.post("/", upload.single("file"), async (req, res) => {
-    try {
-        if (!req.file) {
-            return res.status(400).json({ status: 400, message: "Upload gambar QR Code dengan field 'file'" });
-        }
+router.get('/', async (req, res) => {
+  const imageUrl = req.query.url
 
-        const image = await Jimp.read(req.file.buffer);
-        const qr = new qrCodeReader();
+  if (!imageUrl) {
+    return res.status(400).json({
+      status: 400,
+      error: 'Parameter ?url= tidak ditemukan.'
+    })
+  }
 
-        qr.callback = (err, value) => {
-            if (err || !value) {
-                return res.status(400).json({ status: 400, message: "Gagal membaca QR Code" });
-            }
+  try {
+    const response = await axios.get(imageUrl, { responseType: 'arraybuffer' })
+    const image = await Jimp.read(response.data)
+    const qr = new QrCode()
 
-            res.json({ status: 200, result: value.result });
-        };
-
-        qr.decode(image.bitmap);
-    } catch (error) {
-        res.status(500).json({ status: 500, message: "Terjadi kesalahan" });
+    qr.callback = function(err, value) {
+      if (err || !value) {
+        return res.status(422).json({
+          status: 422,
+          error: 'Gagal membaca QR Code atau tidak terdeteksi.'
+        })
+      } else {
+        return res.status(200).json({
+          status: 200,
+          result: value.result
+        })
+      }
     }
-});
 
-module.exports = router;
+    qr.decode(image.bitmap)
+
+  } catch (e) {
+    console.error('Fatal error:', e.message)
+    res.status(500).json({
+      status: 500,
+      error: `Terjadi kesalahan: ${e.message}`
+    })
+  }
+})
+
+module.exports = router
