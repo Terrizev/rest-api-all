@@ -168,6 +168,7 @@ const apiData = {
             status: "online",
             description: "Membuat gambar fake tweet dan bisa custom seperti Avatar, Like, Replies, Retweets dll."
             endpoint: "/api/tweet?text=&displayName=&sender=&avatar=&replies=&retweets=&likes="
+        },
         {
             method: "GET",
             title: "Screenshot Web",
