@@ -1,18 +1,67 @@
-# Rest API OwnBlox
+<h1 align="center">Rest API OwnBlox</h1>
+<p align="center">
+  OwnBlox adalah Rest API berbasis <strong>Node.js</strong> & <strong>Express.js</strong> yang menyediakan berbagai endpoint untuk pengembangan aplikasi dengan akses data yang mudah.
+</p>
 
-OwnBlox adalah Rest API berbasis Node.js & Express.js yang menyediakan berbagai endpoint untuk pengembangan aplikasi dengan akses data yang mudah.
+---
 
-## Fitur Utama
-- **Downloader**: YouTube, Twitter/X, Facebook, Instagram, TikTok, GitHub, Spotify 
-- **Search**: YouTube, TikTok, WhatsApp Groups, NPM Search, Google, DuckDuckGo, Pinterest, Spotify, Random Meme
-- **Stalker**: Genshin Stalk
-- **AI & Image**: Llama AI, Gemini AI Text-to-Image, Brat Image, Quoted Chat  
-- **Tools**: Genshin Karakter Build, Tweet Generator, Screenshot Web, QR Code Generator, Translate, Nulis  
-- **Information**: Cuaca, Detik News, Kompas  
-- **Fun**: Cek Khodam, Tahu Kah Kamu  
+## 🚀 Fitur Utama
 
-## Link API
-Akses API di: https://api.ownblox.biz.id
+### 📥 Downloader
+- YouTube
+- Twitter/X
+- Facebook
+- Instagram
+- TikTok
+- GitHub
+- Spotify
+- Aptoide Downloader
 
-## Lisensi
-MIT License.
+### 🔍 Search
+- YouTube
+- TikTok
+- WhatsApp Groups
+- NPM Search
+- Google
+- DuckDuckGo
+- Pinterest
+- Spotify
+- Random Meme
+
+### 🕵️‍♂️ Stalker
+- Genshin Impact Stalker
+
+### 🧠 AI & Image
+- LLaMA AI
+- Gemini AI (Text-to-Image)
+- Brat Image Generator
+- Quoted Chat
+
+### 🛠 Tools
+- Genshin Karakter Build
+- Tweet Generator
+- Screenshot Web
+- QR Code Generator
+- Translate
+- Tulisan Tangan (Nulis)
+
+### 📰 Information
+- Cuaca
+- Detik News
+- Kompas News
+
+### 🎮 Fun
+- Cek Khodam
+- Tahu Kah Kamu
+
+---
+
+## 🌐 Link API
+
+**Akses API**: [https://api.ownblox.biz.id](https://api.ownblox.biz.id)
+
+---
+
+## 📄 Lisensi
+
+Distributed under the **MIT License**.

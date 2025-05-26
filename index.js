@@ -19,7 +19,7 @@ const limiter = rateLimit({
 app.use(cors());
 
 const routes = [
-    "ytdl", "twitterdl", "igdl", "fbdl", "ttdl", "gitclone", "spotifydl",
+    "ytdl", "twitterdl", "igdl", "fbdl", "ttdl", "gitclone", "spotifydl", "aptoide",
     "githubstalk", "searchgroups", "randommeme", "ttsearch", "ytsearch", "npmsearch", "googlesearch", "duckduckgo",
     "pinterest", "spotifysearch", "gistalk", "llama-3.3-70b-versatile", "gemini",
     "txt2img", "genshinbuild", "tweet", "ssweb", "translate", "nulis", "cuaca", "qrcodegenerator", "readqr", "removebg",
