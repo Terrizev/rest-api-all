@@ -48,6 +48,13 @@ const apiData = {
             status: "online",
             description: "Download semua lagu dari Spotify dengan mudah.",
             endpoint: "/api/spotifydl?url="
+        },
+        {
+            method: "GET",
+            title: "Aptoide Downloader",
+            status: "online",
+            description: "Download apk apa saja yang tersedia di Aptoide.",
+            endpoint: "/api/aptoide?q="
         }
     ],
     "Search": [
