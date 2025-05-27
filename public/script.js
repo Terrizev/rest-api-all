@@ -8,7 +8,7 @@ const apiData = {
             endpoint: "/api/ytdl",
             parameters: [
                 {name: "url", type: "text", placeholder: "URL YouTube (contoh: https://youtube.com/...)"},
-                {name: "type", type: "text", placeholder: "Jenis konten (video/shorts)"}
+                {name: "type", type: "text", placeholder: "Jenis konten (mp4, mp3, all)"}
             ]
         },
         {
@@ -347,7 +347,7 @@ const apiData = {
             description: "Mengubah text kamu menjadi gambar brat.",
             endpoint: "/api/brat",
             parameters: [
-                {name: "text", type: "text", placeholder: "Teks untuk diubah"}
+                {name: "text", type: "text", placeholder: "Masukkan teks disini."}
             ]
         },
         {
