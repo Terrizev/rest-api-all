@@ -212,9 +212,9 @@ const apiData = {
             title: "Blackbox AI",
             status: "online",
             description: "API untuk mengakses AI Blackbox yang serbaguna.",
-            endpoint: "/api/blackbox",
+            endpoint: "/api/blackboxai",
             parameters: [
-                {name: "message", type: "text", placeholder: "Pertanyaan/perjntah"}
+                {name: "message", type: "text", placeholder: "Pertanyaan/perintah"}
             ]
         }, 
         {
