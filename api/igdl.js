@@ -1,82 +1,84 @@
 const express = require('express');
 const axios = require('axios');
-const cheerio = require('cheerio');
-const FormData = require('form-data');
-
+const CryptoJS = require('crypto-js');
 const router = express.Router();
 
-async function snapinst(url) {
-    try {
-        const { data } = await axios.get('https://snapinst.app/');
-        const $ = cheerio.load(data);
-        const form = new FormData();
+async function ambilWaktuServer() {
+  try {
+    const { data } = await axios.get('https://sssinstagram.com/msec', { timeout: 5000 });
+    return Math.floor(data.msec * 1000);
+  } catch {
+    return Date.now();
+  }
+}
 
-        form.append('url', url);
-        form.append('action', 'post');
-        form.append('lang', '');
-        form.append('cf-turnstile-response', '');
-        form.append('token', $('input[name=token]').attr('value'));
+async function bikinSignature(url, secretKey, timestamp) {
+  const waktuDisesuaikan = Date.now() - (timestamp ? Date.now() - timestamp : 0);
+  const teksHash = `${url}${waktuDisesuaikan}${secretKey}`;
+  const hash = CryptoJS.SHA256(teksHash).toString(CryptoJS.enc.Hex);
+  return { signature: hash, waktuDisesuaikan, timestamp };
+}
 
-        const headers = {
-            ...form.getHeaders(),
-            'accept': '*/*',
-            'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-            'sec-ch-ua': '"Not A(Brand";v="8", "Chromium";v="132"',
-            'sec-ch-ua-mobile': '?1',
-            'sec-ch-ua-platform': '"Android"',
-            'sec-fetch-dest': 'empty',
-            'sec-fetch-mode': 'cors',
-            'sec-fetch-site': 'same-origin',
-            'Referer': 'https://snapinst.app/',
-            'Referrer-Policy': 'strict-origin-when-cross-origin'
-        };
+async function ambilDataInstagram(url) {
+  const secretKey = '19e08ff42f18559b51825685d917c5c9e9d89f8a5c1ab147f820f46e94c3df26';
+  const timestamp = await ambilWaktuServer();
+  const { signature, waktuDisesuaikan } = await bikinSignature(url, secretKey, timestamp);
 
-        const jsbejad = await axios.post('https://snapinst.app/action2.php', form, { headers });
-        const ayok = new Function('callbuk', jsbejad.data.replace('eval', 'callbuk'));
+  const dataRequest = {
+    url,
+    ts: waktuDisesuaikan,
+    _ts: 1739186038417,
+    _tsc: timestamp ? Date.now() - timestamp : 0,
+    _s: signature
+  };
 
-        const html = await new Promise((resolve, reject) => {
-            ayok(t => {
-                const code = t.split(".innerHTML = ")[1].split("; document.")[0];
-                resolve(eval(code));
-            });
-        });
+  const headers = {
+    'Accept': 'application/json, text/plain, */*',
+    'Content-Type': 'application/json',
+    'User-Agent': 'Mozilla/5.0',
+    'Referer': 'https://sssinstagram.com/',
+    'Origin': 'https://sssinstagram.com/'
+  };
 
-        const _ = cheerio.load(html);
-        return {
-            username: _('.row div.left:eq(0)').text().trim(),
-            urls: _('.row .download-item a').map((i, el) => $(el).attr('href')).get()
-        };
-    } catch (e) {
-        console.error(e);
-        return null;
-    }
+  try {
+    const response = await axios.post('https://sssinstagram.com/api/convert', dataRequest, {
+      headers,
+      timeout: 10000
+    });
+    return response.data;
+  } catch {
+    return { error: 'Gagal ambil data', details: 'Yah error, coba lagi ya' };
+  }
 }
 
 router.get('/', async (req, res) => {
-    const url = req.query.url;
-    if (!url) {
-        return res.status(400).json({
-            status: false,
-            code: 400,
-            message: 'Masukkan URL Instagram!'
-        });
+  const { url } = req.query;
+
+  if (!url || !url.includes('instagram.com')) {
+    return res.status(400).json({ error: 'Link tidak valid atau kosong' });
+  }
+
+  try {
+    const result = await ambilDataInstagram(url);
+    if (result.error) {
+      return res.status(500).json({ error: result.details || result.error });
     }
 
-    const result = await snapinst(url);
-    if (!result) {
-        return res.status(500).json({
-            status: false,
-            code: 500,
-            message: 'Gagal mengambil data!'
-        });
-    }
+    const semuaMedia = Array.isArray(result) ? result : [result];
+    const output = semuaMedia.map(item => ({
+      username: item.meta?.username || null,
+      likes: item.meta?.like_count || 0,
+      comments: item.meta?.comment_count || 0,
+      caption: item.meta?.title || null,
+      type: item.url?.[0]?.ext || null,
+      download_url: item.url?.[0]?.url || null,
+      thumbnail: item.thumb || null
+    }));
 
-    res.json({
-        status: true,
-        code: 200,
-        creator: 'OwnBlox',
-        result
-    });
+    res.json({ status: true, result: output });
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Terjadi kesalahan' });
+  }
 });
 
 module.exports = router;
