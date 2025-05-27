@@ -24,7 +24,7 @@ const apiData = {
         {
             method: "GET",
             title: "Instagram Downloader",
-            status: "offline",
+            status: "online",
             description: "API untuk mendownload video atau gambar dari Instagram.",
             endpoint: "/api/igdl",
             parameters: [
@@ -407,7 +407,7 @@ const apiData = {
         { 
             method: "GET",
             title: "Kompas",
-            status: "offline",
+            status: "online",
             description: "Mendapatkan informasi berita terbaru dari Kompas",
             endpoint: "/api/kompasnews",
             parameters: [] // Tidak ada parameter
