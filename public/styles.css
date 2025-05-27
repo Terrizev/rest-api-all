@@ -692,6 +692,33 @@ h1 {
     }
 }
 
+/* Di styles.css */
+.params-container {
+    display: grid;
+    gap: 12px;
+    margin: 15px 0;
+}
+
+.param-input {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.param-input label {
+    font-size: 14px;
+    color: var(--text-color);
+    opacity: 0.9;
+}
+
+.param-input input {
+    padding: 10px;
+    border: 1px solid var(--item-border);
+    border-radius: 6px;
+    background: var(--container-bg);
+    color: var(--text-color);
+}
+
 .api-description button {
     padding: 10px 20px;
     border: none;

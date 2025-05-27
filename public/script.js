@@ -5,56 +5,81 @@ const apiData = {
             title: "YouTube Downloader",
             status: "online",
             description: "API untuk mendownload video atau shorts dari YouTube.",
-            endpoint: "/api/ytdl?url=&type="
+            endpoint: "/api/ytdl",
+            parameters: [
+                {name: "url", type: "text", placeholder: "URL YouTube (contoh: https://youtube.com/...)"},
+                {name: "type", type: "text", placeholder: "Jenis konten (video/shorts)"}
+            ]
         },
         {
             method: "GET",
             title: "Twitter Downloader",
             status: "online",
             description: "API untuk mendownload video atau gambar dari Twitter.",
-            endpoint: "/api/twitterdl?url="
+            endpoint: "/api/twitterdl",
+            parameters: [
+                {name: "url", type: "text", placeholder: "URL Tweet (contoh: https://twitter.com/...)"}
+            ]
         },
         {
             method: "GET",
             title: "Instagram Downloader",
             status: "offline",
             description: "API untuk mendownload video atau gambar dari Instagram.",
-            endpoint: "/api/igdl?url="
+            endpoint: "/api/igdl",
+            parameters: [
+                {name: "url", type: "text", placeholder: "URL Postingan Instagram"}
+            ]
         },
         {
             method: "GET",
             title: "Facebook Downloader",
             status: "online",
             description: "API untuk mendownload video dari Facebook.",
-            endpoint: "/api/fbdl?url="
+            endpoint: "/api/fbdl",
+            parameters: [
+                {name: "url", type: "text", placeholder: "URL Facebook (contoh: https://fb.watch/...)"}
+            ]
         },
         {
             method: "GET",
             title: "TikTok Downloader",
             status: "online",
             description: "API untuk mendownload video dari TikTok.",
-            endpoint: "/api/ttdl?url="
+            endpoint: "/api/ttdl",
+            parameters: [
+                {name: "url", type: "text", placeholder: "URL TikTok (contoh: https://vm.tiktok.com/...)"}
+            ]
         },
         {
             method: "GET",
             title: "GitHub Cloning",
             status: "online",
             description: "Cloning repositori dari GitHub.",
-            endpoint: "/api/gitclone?url="
+            endpoint: "/api/gitclone",
+            parameters: [
+                {name: "url", type: "text", placeholder: "URL Repo GitHub (contoh: https://github.com/...)"}
+            ]
         },
         {
             method: "GET",
             title: "Spotify Downloader",
             status: "online",
             description: "Download semua lagu dari Spotify dengan mudah.",
-            endpoint: "/api/spotifydl?url="
+            endpoint: "/api/spotifydl",
+            parameters: [
+                {name: "url", type: "text", placeholder: "URL Spotify (track/playlist/album)"}
+            ]
         },
         {
             method: "GET",
             title: "Aptoide Downloader",
             status: "online",
             description: "Download apk apa saja yang tersedia di Aptoide.",
-            endpoint: "/api/aptoide?q="
+            endpoint: "/api/aptoide",
+            parameters: [
+                {name: "q", type: "text", placeholder: "Nama Aplikasi (contoh: WhatsApp)"}
+            ]
         }
     ],
     "Search": [
@@ -63,63 +88,90 @@ const apiData = {
             title: "Search Groups",
             status: "online",
             description: "API untuk mencari grup WhatsApp berdasarkan kata kunci.",
-            endpoint: "/api/searchgroups?q="
+            endpoint: "/api/searchgroups",
+            parameters: [
+                {name: "q", type: "text", placeholder: "Kata kunci (contoh: Programming)"}
+            ]
         },
         {
             method: "GET",
             title: "Random Meme",
             status: "online",
             description: "Gambar random yang berisi Meme dan bisa di tentukan count(jumlah) nya.",
-            endpoint: "/api/randommeme?count="
-        },  
+            endpoint: "/api/randommeme",
+            parameters: [
+                {name: "count", type: "number", placeholder: "Jumlah meme (1-10)"}
+            ]
+        },
         {
             method: "GET",
             title: "TikTok Search",
             status: "online",
             description: "API untuk mencari video dari TikTok berdasarkan query.",
-            endpoint: "/api/ttsearch?q="
+            endpoint: "/api/ttsearch",
+            parameters: [
+                {name: "q", type: "text", placeholder: "Kata kunci pencarian"}
+            ]
         },
         {
             method: "GET",
             title: "YouTube Search",
             status: "online",
             description: "API untuk mencari video dari YouTube berdasarkan kata kunci atau query.",
-            endpoint: "/api/ytsearch?q="
+            endpoint: "/api/ytsearch",
+            parameters: [
+                {name: "q", type: "text", placeholder: "Kata kunci pencarian"}
+            ]
         },
         {
             method: "GET",
             title: "NPM Search",
             status: "online",
             description: "Mencari package/module/library yang tersedia berdasarkan query(q) kamu.",
-            endpoint: "/api/npmsearch?q="
+            endpoint: "/api/npmsearch",
+            parameters: [
+                {name: "q", type: "text", placeholder: "Nama package (contoh: react)"}
+            ]
         },
         {
             method: "GET",
             title: "Google Search",
             status: "online",
             description: "Mencari apapun dan semuanya dari Google dengan cepat.",
-            endpoint: "/api/googlesearch?q="
+            endpoint: "/api/googlesearch",
+            parameters: [
+                {name: "q", type: "text", placeholder: "Kata kunci pencarian"}
+            ]
         },
         {
             method: "GET",
             title: "DuckDuckGo Search",
             status: "offline",
             description: "Mencari apapun dan semuanya dari DuckDuckGo dengan mudah.",
-            endpoint: "/api/duckduckgo?q="
+            endpoint: "/api/duckduckgo",
+            parameters: [
+                {name: "q", type: "text", placeholder: "Kata kunci pencarian"}
+            ]
         },
         {
             method: "GET",
             title: "Pinterest",
             status: "online",
             description: "Mencari gambar di Pinterest berdasarkan query (q) kamu.",
-            endpoint: "/api/pinterest?q="
+            endpoint: "/api/pinterest",
+            parameters: [
+                {name: "q", type: "text", placeholder: "Kata kunci gambar"}
+            ]
         },
         {
             method: "GET",
             title: "Spotify Search",
             status: "online",
             description: "Mencari lagu dengan informasi lengkap lainnya berdasarkan query (q) kamu.",
-            endpoint: "/api/spotifysearch?q="
+            endpoint: "/api/spotifysearch",
+            parameters: [
+                {name: "q", type: "text", placeholder: "Judul lagu/artis"}
+            ]
         }
     ],
     "Stalker": [
@@ -128,37 +180,53 @@ const apiData = {
             title: "Genshin Stalk",
             status: "online",
             description: "Stalking akun genshin berdasarkan UID kamu.",
-            endpoint: "/api/gistalk?uid="
+            endpoint: "/api/gistalk",
+            parameters: [
+                {name: "uid", type: "text", placeholder: "Masukkan UID (contoh: 812345678)"}
+            ]
         },
         {
             method: "GET",
             title: "GitHub Stalk",
             status: "online",
             description: "Stalking akun GitHub berdasarkan username.",
-            endpoint: "/api/githubstalk?username="
+            endpoint: "/api/githubstalk",
+            parameters: [
+                {name: "username", type: "text", placeholder: "Username GitHub (contoh: johndoe)"}
+            ]
         }
-    ],      
+    ],
     "AI": [
         {
             method: "GET",
             title: "LLaMA 3.3 70B Versatile",
             status: "online",
             description: "API untuk mengakses model LLaMA 3.3 70B yang serbaguna.",
-            endpoint: "/api/llama-3.3-70b-versatile?content="
+            endpoint: "/api/llama-3.3-70b-versatile",
+            parameters: [
+                {name: "content", type: "text", placeholder: "Input teks (contoh: Jelaskan quantum computing)"}
+            ]
         },
         {
             method: "GET",
             title: "Gemini AI",
             status: "online",
             description: "API untuk mengakses AI model Gemini yang serbaguna.",
-            endpoint: "/api/gemini?text="
+            endpoint: "/api/gemini",
+            parameters: [
+                {name: "text", type: "text", placeholder: "Pertanyaan/perintah"}
+            ]
         },
         {
             method: "GET",
             title: "Txt2Img",
             status: "online",
             description: "API untuk membuat gambar dari AI dengan style yang banyak.",
-            endpoint: "/api/txt2img?prompt=&style="
+            endpoint: "/api/txt2img",
+            parameters: [
+                {name: "prompt", type: "text", placeholder: "Deskripsi gambar"},
+                {name: "style", type: "text", placeholder: "Gaya (contoh: anime, realistic)"}
+            ]
         }
     ],
     "Tools": [
@@ -167,56 +235,88 @@ const apiData = {
             title: "Genshin Character Build",
             status: "online",
             description: "Build karakter Genshin Impact yang lengkap berdasarkan query (q) kamu.",
-            endpoint: "/api/genshinbuild?q="
+            endpoint: "/api/genshinbuild",
+            parameters: [
+                {name: "q", type: "text", placeholder: "Nama karakter (contoh: Xiao)"}
+            ]
         },
         {
             method: "GET",
             title: "Tweet Generator",
             status: "online",
             description: "Membuat gambar fake tweet dan bisa custom seperti Avatar, Like, Replies, Retweets dll.",
-            endpoint: "/api/tweet?text=&displayName=&sender=&avatar=&replies=&retweets=&likes="
+            endpoint: "/api/tweet",
+            parameters: [
+                {name: "text", type: "text", placeholder: "Isi tweet"},
+                {name: "displayName", type: "text", placeholder: "Nama tampilan"},
+                {name: "sender", type: "text", placeholder: "@username"},
+                {name: "avatar", type: "text", placeholder: "URL gambar profil"},
+                {name: "replies", type: "number", placeholder: "Jumlah replies"},
+                {name: "retweets", type: "number", placeholder: "Jumlah retweets"},
+                {name: "likes", type: "number", placeholder: "Jumlah likes"}
+            ]
         },
         {
             method: "GET",
             title: "Screenshot Web",
             status: "online",
             description: "API untuk screenshot website dengan mudah.",
-            endpoint: "/api/ssweb?url="
+            endpoint: "/api/ssweb",
+            parameters: [
+                {name: "url", type: "text", placeholder: "URL website (contoh: https://google.com)"}
+            ]
         },
         {
             method: "GET",
             title: "Translate",
             status: "online",
             description: "API untuk translate bahasa apapun menjadi yang kamu inginkan.",
-            endpoint: "/api/translate?text=&to="
+            endpoint: "/api/translate",
+            parameters: [
+                {name: "text", type: "text", placeholder: "Teks yang akan diterjemahkan"},
+                {name: "to", type: "text", placeholder: "Kode bahasa tujuan (contoh: en, id)"}
+            ]
         },
         {
             method: "GET",
             title: "Nulis",
             status: "online",
             description: "Membuat gambar buku beserta tulisan berdasarkan dari query text kamu.",
-            endpoint: "/api/nulis?text="
+            endpoint: "/api/nulis",
+            parameters: [
+                {name: "text", type: "text", placeholder: "Teks untuk ditulis di buku"}
+            ]
         },
         {
             method: "GET",
             title: "Cuaca",
             status: "online",
             description: "Mendapatkan informasi Cuaca semua kota di dunia berdasarkan query kota.",
-            endpoint: "/api/cuaca?kota="
+            endpoint: "/api/cuaca",
+            parameters: [
+                {name: "kota", type: "text", placeholder: "Nama kota (contoh: Jakarta)"}
+            ]
         },
         {
             method: "GET",
             title: "QR Code Generator",
             status: "online",
             description: "Membuat QR secara otomatis dengan gampang.",
-            endpoint: "/api/qrcodegenerator?text="
+            endpoint: "/api/qrcodegenerator",
+            parameters: [
+                {name: "text", type: "text", placeholder: "Teks/URL untuk QR"}
+            ]
         },
         {
             method: "GET",
             title: "Credit Card Generator",
             status: "online",
             description: "Fake generator Credit Card hanya untuk Fun",
-            endpoint: "/api/vcc?type=&count="
+            endpoint: "/api/vcc",
+            parameters: [
+                {name: "type", type: "text", placeholder: "Jenis kartu (contoh: visa)"},
+                {name: "count", type: "number", placeholder: "Jumlah kartu (1-10)"}
+            ]
         }
     ],
     "Fun": [
@@ -225,14 +325,18 @@ const apiData = {
             title: "Cek Khodam",
             status: "online",
             description: "Permainan seru yang menunjukkan khodam seseorang berdasarkan nama.",
-            endpoint: "/api/cekkhodam?nama="
+            endpoint: "/api/cekkhodam",
+            parameters: [
+                {name: "nama", type: "text", placeholder: "Masukkan nama"}
+            ]
         },
         {
             method: "GET",
             title: "Tahu Kah Kamu?",
             status: "online",
             description: "Permainan seru yang menunjukkan fakta2 random yang mungkin belom kamu ketahui.",
-            endpoint: "/api/tahukahkamu"
+            endpoint: "/api/tahukahkamu",
+            parameters: [] // Tidak ada parameter
         }
     ],
     "Sticker": [
@@ -241,14 +345,23 @@ const apiData = {
             title: "Brat Image",
             status: "online",
             description: "Mengubah text kamu menjadi gambar brat.",
-            endpoint: "/api/brat?text="
+            endpoint: "/api/brat",
+            parameters: [
+                {name: "text", type: "text", placeholder: "Teks untuk diubah"}
+            ]
         },
         {
             method: "GET",
             title: "Quoted Chat",
             status: "online",
             description: "Membuat gambar dengan desain quoted chat yang bisa kamu custom nama, color, foto profile, dan lainnya.",
-            endpoint: "/api/qc?text=&name=&color=&profile="
+            endpoint: "/api/qc",
+            parameters: [
+                {name: "text", type: "text", placeholder: "Isi pesan"},
+                {name: "name", type: "text", placeholder: "Nama pengirim"},
+                {name: "color", type: "color", placeholder: "Warna bubble"},
+                {name: "profile", type: "text", placeholder: "URL gambar profil"}
+            ]
         }
     ],
     "Berita": [
@@ -257,14 +370,16 @@ const apiData = {
             title: "Detik News",
             status: "online",
             description: "Mendapatkan informasi berita terbaru dari Detik News.",
-            endpoint: "/api/detiknews"
+            endpoint: "/api/detiknews",
+            parameters: [] // Tidak ada parameter
         },
         { 
             method: "GET",
             title: "Kompas",
             status: "offline",
             description: "Mendapatkan informasi berita terbaru dari Kompas",
-            endpoint: "/api/kompasnews"
+            endpoint: "/api/kompasnews",
+            parameters: [] // Tidak ada parameter
         }
     ]      
 };
@@ -288,66 +403,82 @@ function syntaxHighlight(json) {
     });
 }
 
-// Perbarui fungsi setupTryItFeature
-function setupTryItFeature(apiItem, endpoint, title) {
+function setupTryItFeature(apiItem, endpoint, title, parameters) {
     const tryItBtn = document.createElement('button');
     tryItBtn.className = 'try-it-btn';
     tryItBtn.innerHTML = '<i class="fas fa-flask"></i> Try It';
-    
-    // Tempatkan tombol di description
     const buttonContainer = apiItem.querySelector('.api-button-container');
     buttonContainer.appendChild(tryItBtn);
 
     tryItBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        openApiModal(endpoint, title);
+        openApiModal(endpoint, title, parameters);
     });
 }
 
-// Fungsi untuk membuka modal
-function openApiModal(endpoint, title) {
+function openApiModal(endpoint, title, parameters) {
     const modal = document.getElementById('apiModal');
     const modalTitle = document.getElementById('modalTitle');
     const testerUrl = modal.querySelector('.tester-url');
     const responseContent = modal.querySelector('.response-content');
-    
-    // Reset modal state
+    const paramsContainer = modal.querySelector('.params-container');
+
     modalTitle.textContent = title;
     testerUrl.value = endpoint;
+    paramsContainer.innerHTML = '';
+
+    if(parameters && parameters.length) {
+        parameters.forEach(param => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'param-input';
+            const label = document.createElement('label');
+            label.textContent = param.name + ':';
+            const input = document.createElement('input');
+            input.type = param.type;
+            input.placeholder = param.placeholder || '';
+            input.dataset.param = param.name;
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+            paramsContainer.appendChild(wrapper);
+        });
+    }
+
     responseContent.innerHTML = '';
     modal.querySelector('.response-status').textContent = '';
     modal.querySelector('.response-time').textContent = '';
     modal.querySelector('.loading-indicator').style.display = 'none';
-    
     modal.classList.add('active');
 }
 
-// Inisialisasi modal
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('apiModal');
     
-    // Close modal
     modal.querySelector('.close-modal').addEventListener('click', () => {
         modal.classList.remove('active');
     });
 
-    // Close ketika klik di luar modal
     window.addEventListener('click', (e) => {
         if (e.target === modal) {
             modal.classList.remove('active');
         }
     });
 
-    // Send request handler
     modal.querySelector('.send-btn').addEventListener('click', async () => {
         const method = modal.querySelector('.tester-method').value;
-        const url = modal.querySelector('.tester-url').value;
+        let baseUrl = modal.querySelector('.tester-url').value;
+        const params = modal.querySelectorAll('.param-input input');
         const responseStatus = modal.querySelector('.response-status');
         const responseTime = modal.querySelector('.response-time');
         const responseContent = modal.querySelector('.response-content');
         const loadingIndicator = modal.querySelector('.loading-indicator');
 
-        // Reset dan tampilkan loading
+        const urlParams = new URLSearchParams();
+        params.forEach(input => {
+            if(input.value) urlParams.append(input.dataset.param, input.value);
+        });
+        
+        const fullUrl = baseUrl + (urlParams.toString() ? `?${urlParams}` : '');
+
         responseContent.innerHTML = '';
         responseStatus.textContent = '';
         responseTime.textContent = '';
@@ -355,18 +486,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const startTime = Date.now();
-            const response = await fetch(url, { 
+            const response = await fetch(fullUrl, { 
                 method,
                 headers: { 'Accept': 'application/json, image/*' }
             });
             const responseTimeMs = Date.now() - startTime;
 
-            // Update metadata
             responseTime.textContent = `${responseTimeMs}ms`;
             responseStatus.textContent = `${response.status} ${response.statusText}`;
             responseStatus.className = `response-status ${response.ok ? 'status-success' : 'status-error'}`;
 
-            // Handle response content
             const contentType = response.headers.get('content-type') || '';
             
             if (contentType.includes('application/json')) {
@@ -385,7 +514,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
                 
-                // Add download handler
                 responseContent.querySelector('.download-btn').addEventListener('click', () => {
                     const a = document.createElement('a');
                     a.href = imgUrl;
@@ -437,7 +565,7 @@ function createApiItem(api) {
     apiItem.appendChild(apiHeader);
     apiItem.appendChild(apiDescription);
     
-    setupTryItFeature(apiItem, api.endpoint, api.title);
+    setupTryItFeature(apiItem, api.endpoint, api.title, api.parameters);
     
     apiDescription.querySelector('.access-btn').addEventListener('click', (e) => {
         e.stopPropagation();
