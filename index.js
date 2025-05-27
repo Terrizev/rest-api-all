@@ -21,8 +21,8 @@ app.use(cors());
 const routes = [
     "ytdl", "twitterdl", "igdl", "fbdl", "ttdl", "gitclone", "spotifydl", "aptoide",
     "githubstalk", "searchgroups", "randommeme", "ttsearch", "ytsearch", "npmsearch", "googlesearch", "duckduckgo",
-    "pinterest", "spotifysearch", "gistalk", "llama-3.3-70b-versatile", "gemini",
-    "txt2img", "genshinbuild", "tweet", "ssweb", "translate", "nulis", "cuaca", "qrcodegenerator", "readqr", "removebg",
+    "pinterest", "spotifysearch", "gistalk", "llama-3.3-70b-versatile", "blackboxai", "gemini",
+    "txt2img", "genshinbuild", "tweet", "getpastebin", "ssweb", "translate", "nulis", "cuaca", "qrcodegenerator", "readqr", "emojimix", "removebg",
     "vcc", "cekkhodam", "tahukahkamu", "brat", "qc", "detiknews", "kompasnews"
 ];
 

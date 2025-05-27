@@ -30,16 +30,20 @@
 
 ### 🕵️‍♂️ Stalker
 - Genshin Impact Stalker
+- GitHub Stalker
 
 ### 🧠 AI & Image
 - LLaMA AI
 - Gemini AI (Text-to-Image)
+- Blackbox AI
 - Brat Image Generator
 - Quoted Chat
 
 ### 🛠 Tools
 - Genshin Karakter Build
 - Tweet Generator
+- Emojimix
+- Get Pastebin
 - Screenshot Web
 - QR Code Generator
 - Translate
