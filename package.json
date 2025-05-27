@@ -8,6 +8,7 @@
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
+    "crypto": "^4.2.0",
     "axios": "^1.5.0",
     "aptoide-api": "^4.0.7",
     "cheerio": "^1.0.0-rc.12",
