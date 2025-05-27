@@ -209,6 +209,16 @@ const apiData = {
         },
         {
             method: "GET",
+            title: "Blackbox AI",
+            status: "online",
+            description: "API untuk mengakses AI Blackbox yang serbaguna.",
+            endpoint: "/api/blackbox",
+            parameters: [
+                {name: "message", type: "text", placeholder: "Pertanyaan/perjntah"}
+            ]
+        }, 
+        {
+            method: "GET",
             title: "Gemini AI",
             status: "online",
             description: "API untuk mengakses AI model Gemini yang serbaguna.",
@@ -254,6 +264,27 @@ const apiData = {
                 {name: "replies", type: "number", placeholder: "Jumlah replies"},
                 {name: "retweets", type: "number", placeholder: "Jumlah retweets"},
                 {name: "likes", type: "number", placeholder: "Jumlah likes"}
+            ]
+        },
+        {
+            method: "GET",
+            title: "Emojimix",
+            status: "online",
+            description: "Membuat kombinasi emoji yang unik.",
+            endpoint: "/api/emojimix",
+            parameters: [
+                {name: "emoji1", type: "text", placeholder: "Contoh: 😁"},
+                {name: "emoji2", type: "text", placeholder: "Contoh: 🤭"}
+            ]
+        },
+        {
+            method: "GET",
+            title: "Get Pastebin",
+            status: "online",
+            description: "Mengambil kode apapun dari Pastebin berdasarkan url kamu.",
+            endpoint: "/api/getpastebin",
+            parameters: [
+                {name: "url", type: "text", placeholder: "Contoh: https://pastebin.com/abc"}
             ]
         },
         {
