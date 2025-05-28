@@ -3,58 +3,47 @@ const axios = require('axios');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-    const url = req.query.url;
+  const { url } = req.query;
 
-    if (!url) {
-        return res.status(400).json({
-            status: 400,
-            creator: 'OwnBlox',
-            error: 'Masukkan URL TikTok!'
-        });
-    }
+  if (!url || !(url.includes('http://') || url.includes('https://')) || !url.includes('tiktok.com')) {
+    return res.status(400).json({ status: false, error: 'URL TikTok tidak valid.' });
+  }
 
-    try {
-        const response = await axios.post(
-            'https://snaptikapp.me/wp-json/aio-dl/video-data',
-            { url },
-            {
-                headers: {
-                    Accept: '*/*',
-                    'Content-Type': 'application/json',
-                    'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Mobile Safari/537.36',
-                },
-                timeout: 10000
-            }
-        );
+  try {
+    const response = await axios.post('https://www.tikwm.com/api/', {}, {
+      headers: {
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
+        'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'Origin': 'https://www.tikwm.com',
+        'Referer': 'https://www.tikwm.com/',
+        'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      params: {
+        url: url,
+        count: 12,
+        cursor: 0,
+        web: 1,
+        hd: 1
+      }
+    });
 
-        const { data } = response;
+    const data = response.data.data;
 
-        if (!data || !data.medias || data.medias.length === 0) {
-            return res.status(500).json({
-                status: 500,
-                creator: "OwnBlox",
-                error: "Gagal mendapatkan link video."
-            });
-        }
+    res.json({
+      status: true,
+      result: {
+        video: 'https://www.tikwm.com' + (data.hdplay || data.play || data.wmplay),
+        audio: data.music ? 'https://www.tikwm.com' + data.music : (data.music_info.play ? 'https://www.tikwm.com' + data.music_info.play : null),
+        title: data.title,
+        author: data.author.nickname
+      }
+    });
 
-        res.json({
-            status: 200,
-            creator: "OwnBlox",
-            source: url,
-            download_links: data.medias.map(media => ({
-                quality: media.quality || "Unknown",
-                format: media.format || "Unknown",
-                url: media.url
-            }))
-        });
-    } catch (err) {
-        console.error("Error:", err.message, err.response?.data);
-        res.status(500).json({
-            status: 500,
-            creator: 'OwnBlox',
-            error: 'Terjadi kesalahan, coba lagi nanti!'
-        });
-    }
+  } catch (error) {
+    res.status(500).json({ status: false, error: 'Gagal memproses permintaan.' });
+  }
 });
 
 module.exports = router;
