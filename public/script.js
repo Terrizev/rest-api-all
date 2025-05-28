@@ -45,7 +45,7 @@ const apiData = {
             method: "GET",
             title: "TikTok Downloader",
             status: "online",
-            description: "API untuk mendownload video dari TikTok.",
+            description: "API untuk mendownload video/gambar dari TikTok.",
             endpoint: "/api/ttdl",
             parameters: [
                 {name: "url", type: "text", placeholder: "URL TikTok (contoh: https://vm.tiktok.com/...)"}
