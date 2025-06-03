@@ -383,7 +383,7 @@ const apiData = {
                 {name: "text", type: "text", placeholder: "Teks untuk ditulis di buku"}
             ]
         }
-    ]
+    ],
     "Sticker": [
         {
             method: "GET",
