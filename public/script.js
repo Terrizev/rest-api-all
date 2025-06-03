@@ -252,33 +252,6 @@ const apiData = {
         },
         {
             method: "GET",
-            title: "Tweet Generator",
-            status: "online",
-            description: "Membuat gambar fake tweet dan bisa custom seperti Avatar, Like, Replies, Retweets dll.",
-            endpoint: "/api/tweet",
-            parameters: [
-                {name: "text", type: "text", placeholder: "Isi tweet"},
-                {name: "displayName", type: "text", placeholder: "Nama tampilan"},
-                {name: "sender", type: "text", placeholder: "@username"},
-                {name: "avatar", type: "text", placeholder: "URL gambar profil"},
-                {name: "replies", type: "number", placeholder: "Jumlah replies"},
-                {name: "retweets", type: "number", placeholder: "Jumlah retweets"},
-                {name: "likes", type: "number", placeholder: "Jumlah likes"}
-            ]
-        },
-        {
-            method: "GET",
-            title: "Emojimix",
-            status: "online",
-            description: "Membuat kombinasi emoji yang unik.",
-            endpoint: "/api/emojimix",
-            parameters: [
-                {name: "emoji1", type: "text", placeholder: "Contoh: 😁"},
-                {name: "emoji2", type: "text", placeholder: "Contoh: 🤭"}
-            ]
-        },
-        {
-            method: "GET",
             title: "Get Pastebin",
             status: "online",
             description: "Mengambil kode apapun dari Pastebin berdasarkan url kamu.",
@@ -307,17 +280,7 @@ const apiData = {
                 {name: "text", type: "text", placeholder: "Teks yang akan diterjemahkan"},
                 {name: "to", type: "text", placeholder: "Kode bahasa tujuan (contoh: en, id)"}
             ]
-        },
-        {
-            method: "GET",
-            title: "Nulis",
-            status: "online",
-            description: "Membuat gambar buku beserta tulisan berdasarkan dari query text kamu.",
-            endpoint: "/api/nulis",
-            parameters: [
-                {name: "text", type: "text", placeholder: "Teks untuk ditulis di buku"}
-            ]
-        },
+        },        
         {
             method: "GET",
             title: "Cuaca",
@@ -326,16 +289,6 @@ const apiData = {
             endpoint: "/api/cuaca",
             parameters: [
                 {name: "kota", type: "text", placeholder: "Nama kota (contoh: Jakarta)"}
-            ]
-        },
-        {
-            method: "GET",
-            title: "QR Code Generator",
-            status: "online",
-            description: "Membuat QR secara otomatis dengan gampang.",
-            endpoint: "/api/qrcodegenerator",
-            parameters: [
-                {name: "text", type: "text", placeholder: "Teks/URL untuk QR"}
             ]
         },
         {
@@ -370,6 +323,67 @@ const apiData = {
             parameters: [] // Tidak ada parameter
         }
     ],
+    "Maker": [
+        {
+            method: "GET",
+            title: "Welcome-Goodbye Image",
+            status: "online",
+            description: "Membuat card image Welcome Dan Goodbye yang bisa di custom.",
+            endpoint: "/api/welcome-goodbye-image",
+            parameters: [
+                {name: "name", type: "text", placeholder: "Masukkan nama."},
+                {name: "profile", type: "text", placeholder: "https://..."},
+                {name: "welcome", type: "text", placeholder: "true/false"}
+            ]
+        },
+        {
+            method: "GET",
+            title: "Tweet Generator",
+            status: "online",
+            description: "Membuat gambar fake tweet dan bisa custom seperti Avatar, Like, Replies, Retweets dll.",
+            endpoint: "/api/tweet",
+            parameters: [
+                {name: "text", type: "text", placeholder: "Isi tweet"},
+                {name: "displayName", type: "text", placeholder: "Nama tampilan"},
+                {name: "sender", type: "text", placeholder: "@username"},
+                {name: "avatar", type: "text", placeholder: "URL gambar profil"},
+                {name: "replies", type: "number", placeholder: "Jumlah replies"},
+                {name: "retweets", type: "number", placeholder: "Jumlah retweets"},
+                {name: "likes", type: "number", placeholder: "Jumlah likes"}
+            ]
+        },
+        {
+            method: "GET",
+            title: "Emojimix",
+            status: "online",
+            description: "Membuat kombinasi emoji yang unik.",
+            endpoint: "/api/emojimix",
+            parameters: [
+                {name: "emoji1", type: "text", placeholder: "Contoh: 😁"},
+                {name: "emoji2", type: "text", placeholder: "Contoh: 🤭"}
+            ]
+        },
+        {
+            method: "GET",
+            title: "QR Code Generator",
+            status: "online",
+            description: "Membuat QR secara otomatis dengan gampang.",
+            endpoint: "/api/qrcodegenerator",
+            parameters: [
+                {name: "text", type: "text", placeholder: "Teks/URL untuk QR"}
+            ]
+        },
+        {
+            method: "GET",
+            title: "Nulis",
+            status: "online",
+            description: "Membuat gambar buku beserta tulisan berdasarkan dari query text kamu.",
+            endpoint: "/api/nulis",
+            parameters: [
+                {name: "text", type: "text", placeholder: "Teks untuk ditulis di buku"}
+            ]
+        }
+    ]
     "Sticker": [
         {
             method: "GET",
