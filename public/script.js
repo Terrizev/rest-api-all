@@ -429,6 +429,16 @@ const apiData = {
     ]      
 };
 
+const changelogData = [
+     {
+         date: "4 Juni 2025",
+         updates: [
+              "Menambahkan Changelog, yang bisa di akses di halaman utama dengan menekan tombol lonceng, fungsinya agar bisa melihat update terbaru atau informasi Maintenance Dan Lainnya."
+         ]
+     }
+]
+
+let changelogRead = localStorage.getItem('changelogRead') === 'true';
 let currentlyOpenItem = null;
 
 function syntaxHighlight(json) {
@@ -495,91 +505,40 @@ function openApiModal(endpoint, title, parameters) {
     modal.classList.add('active');
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const modal = document.getElementById('apiModal');
+// Changelog functions
+function loadChangelogData() {
+    const changelogList = document.getElementById('changelogList');
+    changelogList.innerHTML = '';
     
-    modal.querySelector('.close-modal').addEventListener('click', () => {
-        modal.classList.remove('active');
-    });
-
-    window.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.classList.remove('active');
-        }
-    });
-
-    modal.querySelector('.send-btn').addEventListener('click', async () => {
-        const method = modal.querySelector('.tester-method').value;
-        let baseUrl = modal.querySelector('.tester-url').value;
-        const params = modal.querySelectorAll('.param-input input');
-        const responseStatus = modal.querySelector('.response-status');
-        const responseTime = modal.querySelector('.response-time');
-        const responseContent = modal.querySelector('.response-content');
-        const loadingIndicator = modal.querySelector('.loading-indicator');
-
-        const urlParams = new URLSearchParams();
-        params.forEach(input => {
-            if(input.value) urlParams.append(input.dataset.param, input.value);
-        });
+    changelogData.forEach(item => {
+        const updatesList = item.updates.map(update => `<li>${update}</li>`).join('');
         
-        const fullUrl = baseUrl + (urlParams.toString() ? `?${urlParams}` : '');
-
-        responseContent.innerHTML = '';
-        responseStatus.textContent = '';
-        responseTime.textContent = '';
-        loadingIndicator.style.display = 'flex';
-
-        try {
-            const startTime = Date.now();
-            const response = await fetch(fullUrl, { 
-                method,
-                headers: { 'Accept': 'application/json, image/*' }
-            });
-            const responseTimeMs = Date.now() - startTime;
-
-            responseTime.textContent = `${responseTimeMs}ms`;
-            responseStatus.textContent = `${response.status} ${response.statusText}`;
-            responseStatus.className = `response-status ${response.ok ? 'status-success' : 'status-error'}`;
-
-            const contentType = response.headers.get('content-type') || '';
-            
-            if (contentType.includes('application/json')) {
-                const data = await response.json();
-                responseContent.innerHTML = `<pre>${syntaxHighlight(data)}</pre>`;
-            } 
-            else if (contentType.includes('image')) {
-                const blob = await response.blob();
-                const imgUrl = URL.createObjectURL(blob);
-                responseContent.innerHTML = `
-                    <div class="image-response">
-                        <img src="${imgUrl}" class="api-image-response">
-                        <button class="download-btn">
-                            <i class="fas fa-download"></i> Download Image
-                        </button>
-                    </div>
-                `;
-                
-                responseContent.querySelector('.download-btn').addEventListener('click', () => {
-                    const a = document.createElement('a');
-                    a.href = imgUrl;
-                    a.download = `download-${Date.now()}.${blob.type.split('/')[1]}`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                });
-            }
-            else {
-                const text = await response.text();
-                responseContent.textContent = text;
-            }
-        } catch (error) {
-            responseStatus.textContent = `Error: ${error.message}`;
-            responseStatus.className = 'response-status status-error';
-        } finally {
-            loadingIndicator.style.display = 'none';
-        }
+        const changelogItem = document.createElement('div');
+        changelogItem.className = 'changelog-item';
+        changelogItem.innerHTML = `
+            <div class="changelog-date">${item.date}</div>
+            <ul class="changelog-updates">
+                ${updatesList}
+            </ul>
+        `;
+        
+        changelogList.appendChild(changelogItem);
     });
-});
+    
+    updateNotificationBadge();
+}
+
+function updateNotificationBadge() {
+    const notificationBadge = document.querySelector('.notification-badge');
+    if (!notificationBadge) return;
+    
+    if (changelogRead) {
+        notificationBadge.style.display = 'none';
+    } else {
+        notificationBadge.textContent = changelogData.length;
+        notificationBadge.style.display = 'inline-flex';
+    }
+}
 
 function createApiItem(api) {
     const apiItem = document.createElement('div');
@@ -783,6 +742,123 @@ document.addEventListener('DOMContentLoaded', () => {
     
     setupThemeToggle();
     
+    // Setup changelog
+    const changelogPopup = document.getElementById('changelogPopup');
+    const showChangelogBtn = document.getElementById('showChangelog');
+    const closePopup = document.querySelector('.close-popup');
+    const markAsReadBtn = document.getElementById('markAsRead');
+    
+    loadChangelogData();
+    
+    // Show changelog popup
+    showChangelogBtn.addEventListener('click', () => {
+        changelogPopup.classList.add('active');
+        changelogRead = true;
+        localStorage.setItem('changelogRead', 'true');
+        updateNotificationBadge();
+    });
+    
+    // Close popup
+    closePopup.addEventListener('click', () => {
+        changelogPopup.classList.remove('active');
+    });
+    
+    markAsReadBtn.addEventListener('click', () => {
+        changelogPopup.classList.remove('active');
+    });
+    
+    // Close popup when clicking outside
+    changelogPopup.addEventListener('click', (e) => {
+        if (e.target === changelogPopup) {
+            changelogPopup.classList.remove('active');
+        }
+    });
+    
+    // API Modal setup
+    const modal = document.getElementById('apiModal');
+    modal.querySelector('.close-modal').addEventListener('click', () => {
+        modal.classList.remove('active');
+    });
+    
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+        }
+    });
+    
+    modal.querySelector('.send-btn').addEventListener('click', async () => {
+        const method = modal.querySelector('.tester-method').value;
+        let baseUrl = modal.querySelector('.tester-url').value;
+        const params = modal.querySelectorAll('.param-input input');
+        const responseStatus = modal.querySelector('.response-status');
+        const responseTime = modal.querySelector('.response-time');
+        const responseContent = modal.querySelector('.response-content');
+        const loadingIndicator = modal.querySelector('.loading-indicator');
+        
+        const urlParams = new URLSearchParams();
+        params.forEach(input => {
+            if(input.value) urlParams.append(input.dataset.param, input.value);
+        });
+        
+        const fullUrl = baseUrl + (urlParams.toString() ? `?${urlParams}` : '');
+        
+        responseContent.innerHTML = '';
+        responseStatus.textContent = '';
+        responseTime.textContent = '';
+        loadingIndicator.style.display = 'flex';
+        
+        try {
+            const startTime = Date.now();
+            const response = await fetch(fullUrl, { 
+                method,
+                headers: { 'Accept': 'application/json, image/*' }
+            });
+            const responseTimeMs = Date.now() - startTime;
+            
+            responseTime.textContent = `${responseTimeMs}ms`;
+            responseStatus.textContent = `${response.status} ${response.statusText}`;
+            responseStatus.className = `response-status ${response.ok ? 'status-success' : 'status-error'}`;
+            
+            const contentType = response.headers.get('content-type') || '';
+            
+            if (contentType.includes('application/json')) {
+                const data = await response.json();
+                responseContent.innerHTML = `<pre>${syntaxHighlight(data)}</pre>`;
+            } 
+            else if (contentType.includes('image')) {
+                const blob = await response.blob();
+                const imgUrl = URL.createObjectURL(blob);
+                responseContent.innerHTML = `
+                    <div class="image-response">
+                        <img src="${imgUrl}" class="api-image-response">
+                        <button class="download-btn">
+                            <i class="fas fa-download"></i> Download Image
+                        </button>
+                    </div>
+                `;
+                
+                responseContent.querySelector('.download-btn').addEventListener('click', () => {
+                    const a = document.createElement('a');
+                    a.href = imgUrl;
+                    a.download = `download-${Date.now()}.${blob.type.split('/')[1]}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                });
+            }
+            else {
+                const text = await response.text();
+                responseContent.textContent = text;
+            }
+        } catch (error) {
+            responseStatus.textContent = `Error: ${error.message}`;
+            responseStatus.className = 'response-status status-error';
+        } finally {
+            loadingIndicator.style.display = 'none';
+        }
+    });
+    
+    // Load API data
     setTimeout(() => {
         loadApiData();
         
