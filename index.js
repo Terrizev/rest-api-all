@@ -22,7 +22,7 @@ const routes = [
     "ytdl", "twitterdl", "igdl", "fbdl", "ttdl", "gitclone", "spotifydl", "aptoide",
     "githubstalk", "searchgroups", "randommeme", "ttsearch", "ytsearch", "npmsearch", "googlesearch", "duckduckgo",
     "pinterest", "spotifysearch", "gistalk", "llama-3.3-70b-versatile", "blackboxai", "gemini",
-    "txt2img", "genshinbuild", "tweet", "getpastebin", "ssweb", "translate", "nulis", "cuaca", "qrcodegenerator", "readqr", "emojimix", "removebg", "welcome-goodbye-image",
+    "txt2img", "genshinbuild", "tweet", "getpastebin", "ssweb", "translate", "nulis", "cuaca", "qrcodegenerator", "readqr", "emojimix", "removebg", "welcome-goodbye-image", "web2zip",
     "vcc", "cekkhodam", "tahukahkamu", "brat", "qc", "detiknews", "kompasnews"
 ];
 
