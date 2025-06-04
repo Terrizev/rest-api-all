@@ -262,6 +262,16 @@ const apiData = {
         },
         {
             method: "GET",
+            title: "Website to Zip",
+            status: "online",
+            description: "Mengubah website berdasarkan parameter url kamu ke Zip",
+            endpoint: "/api/web2zip",
+            parameters: [
+                {name: "url", type: "text", placeholder: "https://..."}
+            ]
+        },
+        {
+            method: "GET",
             title: "Screenshot Web",
             status: "online",
             description: "API untuk screenshot website dengan mudah.",
