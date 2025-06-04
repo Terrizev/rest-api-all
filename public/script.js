@@ -445,6 +445,12 @@ const changelogData = [
          updates: [
               "Menambahkan Changelog, yang bisa di akses di halaman utama dengan menekan tombol lonceng, fungsinya agar bisa melihat update terbaru atau informasi Maintenance Dan Lainnya."
          ]
+     },
+     {
+         date: "5 Juni 2025",
+         updates: [
+              "Menambahkan endpoint baru yaitu /api/web2zip yang berada di kategori tools, silahkan gunakan baik-baik jangan spam atau di buat keperluan yang ilegal."
+         ]
      }
 ]
 
