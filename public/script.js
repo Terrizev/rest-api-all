@@ -364,6 +364,17 @@ const apiData = {
         },
         {
             method: "GET",
+            title: "Ghibli Image",
+            status: "online",
+            description: "Membuat gambar dengan style ghibli berdasarkan prompt kamu.",
+            endpoint: "/api/ghibliimage",
+            parameters: [
+                {name: "prompt", type: "text",
+                placeholder: "Contoh: girl enjoying sunset"}
+            ]
+        },
+        {
+            method: "GET",
             title: "Emojimix",
             status: "online",
             description: "Membuat kombinasi emoji yang unik.",
@@ -441,17 +452,17 @@ const apiData = {
 
 const changelogData = [
      {
-         date: "4 Juni 2025",
+         date: "5 Juni 2025",
          updates: [
-              "Menambahkan Changelog, yang bisa di akses di halaman utama dengan menekan tombol lonceng, fungsinya agar bisa melihat update terbaru atau informasi Maintenance Dan Lainnya."
+              "Menambahkan endpoint baru yaitu /api/web2zip yang berada di kategori Tools, silahkan gunakan baik-baik jangan spam atau di buat keperluan yang ilegal."
          ]
      },
      {
-         date: "5 Juni 2025",
-         updates: [
-              "Menambahkan endpoint baru yaitu /api/web2zip yang berada di kategori tools, silahkan gunakan baik-baik jangan spam atau di buat keperluan yang ilegal."
+         date: "5 Juni 2025 V2",
+         updates: [ 
+              "Menambahkan endpoint baru yaitu /api/ghibliimage yang berada di kategori Maker, silahkan gunakan baik-baik jangan spam atau di buat keperluan yang ilegal."
          ]
-     }
+     }    
 ]
 
 let changelogRead = localStorage.getItem('changelogRead') === 'true';
