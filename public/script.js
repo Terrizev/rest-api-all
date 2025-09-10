@@ -311,6 +311,16 @@ const apiData = {
                 {name: "type", type: "text", placeholder: "Jenis kartu (contoh: visa)"},
                 {name: "count", type: "number", placeholder: "Jumlah kartu (1-10)"}
             ]
+        },
+        {
+            method: "GET",
+            title: "To Figur",
+            status: "online",
+            description: "Membuat gambar anda menjadi figur!",
+            endpoint: "/api/tofigura?imageurl=",
+            parameters: [
+                {name: "imageurl", type: "text", placeholder: "Masukan link gambar"}
+            ]
         }
     ],
     "Fun": [
